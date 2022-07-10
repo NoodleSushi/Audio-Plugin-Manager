@@ -1,0 +1,48 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://icons/Remove.svg" type="Texture" id=1]
+[ext_resource path="res://icons/Folder.svg" type="Texture" id=2]
+[ext_resource path="res://FolderTree.cs" type="Script" id=3]
+[ext_resource path="res://TreeExtended.cs" type="Script" id=4]
+
+[node name="FolderTree" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/separation = 0
+script = ExtResource( 3 )
+FolderButtonPath = NodePath("Buttons/FolderButton")
+DeleteButtonPath = NodePath("Buttons/DeleteButton")
+TreePath = NodePath("Tree")
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+margin_right = 1024.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 0, 32 )
+custom_constants/separation = 0
+alignment = 1
+
+[node name="FolderButton" type="TextureButton" parent="Buttons"]
+margin_right = 512.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+texture_normal = ExtResource( 2 )
+expand = true
+stretch_mode = 3
+
+[node name="DeleteButton" type="TextureButton" parent="Buttons"]
+margin_left = 512.0
+margin_right = 1024.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+texture_normal = ExtResource( 1 )
+expand = true
+stretch_mode = 3
+
+[node name="Tree" type="Tree" parent="."]
+margin_top = 32.0
+margin_right = 1024.0
+margin_bottom = 600.0
+size_flags_vertical = 3
+hide_root = true
+drop_mode_flags = 2
+script = ExtResource( 4 )
