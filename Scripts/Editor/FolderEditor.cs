@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using PluginManager.PluginTree;
 
 
-namespace PluginManager
+namespace PluginManager.Editor
 {
     public class FolderEditor : Control
     {
@@ -24,22 +24,24 @@ namespace PluginManager
 
         public override void _Ready()
         {
-            Server.Instance.Connect(nameof(Server.FocusedFolderChanged), this, nameof(OnServerFocusedFolderChanged));
+            EditorServer.Instance.Connect(nameof(EditorServer.FocusedFolderChanged), this, nameof(OnEditorInsFocusedFolderChanged));
             Tree = GetNode<TreeExtended>(TreePath);
             Tree.CreateItem();
             Tree.Connect(nameof(TreeExtended.ItemDropped), this, nameof(OnTreeExtendedItemDropped));
             Tree.Connect("item_selected", this, nameof(OnTreeItemSelected));
             PropertiesContainer = GetNode<VBoxContainer>(PropertiesPath);
+            EditorServer.Instance.SetPropertiesContainer(PropertiesContainer);
             GetNode<TextureButton>(FolderButtonPath).Connect("pressed", this, nameof(OnFolderButtonPressed));
             GetNode<TextureButton>(PluginButtonPath).Connect("pressed", this, nameof(OnPluginButtonPressed));
             GetNode<TextureButton>(SeparatorButtonPath).Connect("pressed", this, nameof(OnSeparatorButtonPressed));
             GetNode<TextureButton>(DeleteButtonPath).Connect("pressed", this, nameof(OnDeleteButtonPressed));
+            UpdateTree();
         }
 
         private void UpdateTree()
         {
             Tree.GetRoot()?.Free();
-            if (Server.Instance.FocusedFolder == null)
+            if (EditorServer.Instance.FocusedFolder == null)
             {
                 Tree.HideRoot = true;
                 Tree.Update();
@@ -47,7 +49,7 @@ namespace PluginManager
             }
             Tree.HideRoot = false;
             TreeItem rootTreeItem = Tree.CreateItem();
-            TreeFolder rootTreeFolder = Server.Instance.FocusedFolder;
+            TreeFolder rootTreeFolder = EditorServer.Instance.FocusedFolder;
             new TreeItemContainer(rootTreeItem, rootTreeFolder);
 
             Stack < (TreeItem treeItem, TreeFolder treeFolder, int idx) > trav = new();
@@ -71,23 +73,25 @@ namespace PluginManager
 
         public void AddOnSelected(TreeEntity treeEntity)
         {
-            if (Server.Instance.FocusedFolder == null)
+            if (EditorServer.Instance.FocusedFolder == null)
                 return;
             TreeEntity selectedEntity = GetSelectedEntity();
             if (selectedEntity == null)
             {
-                Server.Instance.FocusedFolder.AddChild(treeEntity);
+                EditorServer.Instance.FocusedFolder.AddChild(treeEntity);
                 UpdateTree();
             }
             else if (selectedEntity is TreeFolder treeFolder)
             {
                 treeFolder.AddChild(treeEntity);
                 UpdateTree();
+                treeFolder.SelectTreeItem();
             }
             else
             {
                 selectedEntity.Parent.AddChildAfter(treeEntity, selectedEntity);
                 UpdateTree();
+                selectedEntity.SelectTreeItem();
             }
         }
 
@@ -96,18 +100,10 @@ namespace PluginManager
             return (Tree.GetSelected()?.GetMetadata(0) as TreeItemContainer)?.Modifier;
         }
 
-        private void ClearPropertiesContainer()
+        public void OnEditorInsFocusedFolderChanged(TreeFolder newFocusedFolder)
         {
-            foreach (Node child in PropertiesContainer.GetChildren())
-            {
-                child.QueueFree();
-            }
-        }
-
-        public void OnServerFocusedFolderChanged(TreeFolder newFocusedFolder)
-        {
-            ClearPropertiesContainer();
-            Server.Instance.SelectedTreeEntity = null;
+            EditorServer.Instance.ClearProperties();
+            EditorServer.Instance.SelectedTreeEntity = newFocusedFolder;
             UpdateTree();
         }
 
@@ -149,12 +145,12 @@ namespace PluginManager
 
         public void OnTreeItemSelected()
         {
-            ClearPropertiesContainer();
+            EditorServer.Instance.ClearProperties();
             TreeEntity treeEntity = GetSelectedEntity();
             if (treeEntity != null)
             {
-                treeEntity.GenerateProperties(PropertiesContainer);
-                Server.Instance.SelectedTreeEntity = treeEntity;
+                treeEntity.GenerateProperties();
+                EditorServer.Instance.SelectedTreeEntity = treeEntity;
             }
         }
 
@@ -176,12 +172,12 @@ namespace PluginManager
         public void OnDeleteButtonPressed()
         {
             TreeEntity treeEntity = GetSelectedEntity();
-            if (treeEntity is TreeEntity && treeEntity != Server.Instance.FocusedFolder)
+            if (treeEntity is TreeEntity && treeEntity != EditorServer.Instance.FocusedFolder)
             {
                 treeEntity.Parent.RemoveChild(treeEntity);
                 UpdateTree();
-                ClearPropertiesContainer();
-                Server.Instance.SelectedTreeEntity = null;
+                EditorServer.Instance.ClearProperties();
+                EditorServer.Instance.SelectedTreeEntity = null;
             }
         }
     }

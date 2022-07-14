@@ -1,20 +1,13 @@
 ﻿using Godot;
-using System;
 
 namespace PluginManager.PluginTree
 {
     public class TreeItemContainer : Godot.Object
     {
         private TreeItem _treeItem;
-        public TreeItem TreeItem
-        {
-            get { return _treeItem; }
-        }
+        public TreeItem TreeItem => _treeItem;
         private TreeEntity _modifier;
-        public TreeEntity Modifier
-        {
-            get { return _modifier; }
-        }
+        public TreeEntity Modifier => _modifier;
 
         public TreeItemContainer(TreeItem treeItem, TreeEntity modifier)
         {

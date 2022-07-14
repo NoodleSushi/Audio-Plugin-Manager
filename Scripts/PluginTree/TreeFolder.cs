@@ -1,16 +1,13 @@
-﻿using Godot;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree
 {
     public class TreeFolder : TreeEntity
     {
         private List<TreeEntity> _children = new();
-        public ReadOnlyCollection<TreeEntity> Children
-        {
-            get => _children.AsReadOnly();
-        }
+        public ReadOnlyCollection<TreeEntity> Children => _children.AsReadOnly();
 
         private void MakeChildParentThis(TreeEntity child)
         {
@@ -46,6 +43,27 @@ namespace PluginManager.PluginTree
                 child.Parent = null;
             }
             _children.Remove(child);
+        }
+
+        override public JObject Serialize(TreeEntityLookup TEL)
+        {
+            JObject jobj = base.Serialize(TEL);
+            JArray childrenArray = new();
+            foreach (TreeEntity child in _children)
+            {
+                childrenArray.Add(TEL.GetID(child));
+            }
+            jobj.Add("children", childrenArray);
+            return jobj;
+        }
+
+        override public void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        {
+            base.Deserialize(jobj, TEL);
+            foreach (int treeEntityID in jobj["children"])
+            {
+                AddChild(TEL.GetTreeEntity(treeEntityID));
+            }
         }
     }
 }

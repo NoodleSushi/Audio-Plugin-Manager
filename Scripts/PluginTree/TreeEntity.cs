@@ -1,6 +1,9 @@
 using Godot;
+using PluginManager.Editor;
+using PluginManager.PluginTree.Components;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree
 {
@@ -26,11 +29,12 @@ namespace PluginManager.PluginTree
             treeItem.SetText(0, Label);
         }
 
-        public void GenerateProperties(VBoxContainer propertiesContainer)
+        public void GenerateProperties()
         {
+            EditorServer.Instance.ClearProperties();
             foreach (Component component in _components)
             {
-                component.GenerateProperties(propertiesContainer);
+                component.GenerateProperties();
             }
         }
 
@@ -59,6 +63,24 @@ namespace PluginManager.PluginTree
         public void SelectTreeItem()
         {
             EmitSignal(nameof(SelectEmitted));
+        }
+
+        virtual public JObject Serialize(TreeEntityLookup TEL)
+        {
+            JObject jobj = new();
+            foreach (Component comp in _components)
+            {
+                comp.Serialize(jobj);
+            }
+            return jobj;
+        }
+
+        virtual public void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        {
+            foreach (Component comp in _components)
+            {
+                comp.Deserialize(jobj, TEL);
+            }
         }
     }
 }
