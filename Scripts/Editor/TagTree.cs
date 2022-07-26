@@ -2,7 +2,6 @@ using Godot;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
 
-
 namespace PluginManager.Editor
 {
     public class TagTree : VBoxContainer
@@ -12,12 +11,14 @@ namespace PluginManager.Editor
 
         [Export]
         readonly private NodePath TagButtonPath;
+
         [Export]
         readonly private NodePath DeleteButtonPath;
+
         [Export]
         readonly private NodePath TreePath;
         private TreeExtended Tree;
-        
+
         public override void _Ready()
         {
             Tree = GetNode<TreeExtended>(TreePath);
@@ -25,12 +26,25 @@ namespace PluginManager.Editor
             Tree.Connect(nameof(TreeExtended.ItemDropped), this, nameof(OnTreeExtendedItemDropped));
             Tree.Connect("item_selected", this, nameof(OnTreeExtendedItemSelected));
             Tree.Connect("button_pressed", this, nameof(OnTreeButtonPressed));
-            GetNode<TextureButton>(TagButtonPath).Connect("pressed", this, nameof(OnTagButtonPressed));
-            GetNode<TextureButton>(DeleteButtonPath).Connect("pressed", this, nameof(OnDeleteButtonPressed));
+            GetNode<BaseButton>(TagButtonPath).Connect("pressed", this, nameof(OnTagButtonPressed));
+            GetNode<BaseButton>(DeleteButtonPath)
+                .Connect("pressed", this, nameof(OnDeleteButtonPressed));
             PluginServer.Instance.Connect(nameof(PluginServer.Cleared), this, nameof(UpdateTree));
-            PluginServer.Instance.Connect(nameof(PluginServer.Deserialized), this, nameof(UpdateTree));
-            EditorServer.Instance.Connect(nameof(EditorServer.FocusedFolderChanged), this, nameof(OnEditorInsFocusedFolderChanged));
-            EditorServer.Instance.Connect(nameof(EditorServer.TreeEntityChanged), this, nameof(UpdateTree));
+            PluginServer.Instance.Connect(
+                nameof(PluginServer.Deserialized),
+                this,
+                nameof(UpdateTree)
+            );
+            EditorServer.Instance.Connect(
+                nameof(EditorServer.FocusedFolderChanged),
+                this,
+                nameof(OnEditorInsFocusedFolderChanged)
+            );
+            EditorServer.Instance.Connect(
+                nameof(EditorServer.TreeEntityChanged),
+                this,
+                nameof(UpdateTree)
+            );
         }
 
         public void OnTagButtonPressed()
@@ -60,12 +74,22 @@ namespace PluginManager.Editor
                 TreeItem treeItem = Tree.CreateItem(root);
                 treeItem.SetText(0, tag.Name);
                 treeItem.SetIcon(0, Resources.ICON_TAG);
-                if (EditorServer.Instance.SelectedTreeEntity is TreeEntity treeEntity &&
-                    treeEntity.GetComponent<TagCollection>() is TagCollection tagCollection)
+                if (
+                    EditorServer.Instance.SelectedTreeEntity is TreeEntity treeEntity
+                    && treeEntity.GetComponent<TagCollection>() is TagCollection tagCollection
+                )
                 {
-                    treeItem.AddButton(0, tagCollection.HasTag(tag) ? Resources.ICON_REMOVE : Resources.ICON_ADD, BUTTON_ADD);
+                    treeItem.AddButton(
+                        0,
+                        tagCollection.HasTag(tag) ? Resources.ICON_REMOVE : Resources.ICON_ADD,
+                        BUTTON_ADD
+                    );
                 }
-                treeItem.AddButton(0, (tag.Visible) ? Resources.ICON_VISIBLE_ON : Resources.ICON_VISIBLE_OFF, BUTTON_VISIBILITY);
+                treeItem.AddButton(
+                    0,
+                    tag.Visible ? Resources.ICON_VISIBLE_ON : Resources.ICON_VISIBLE_OFF,
+                    BUTTON_VISIBILITY
+                );
                 treeItem.SetMetadata(0, tag);
             }
             Tree.Update();
@@ -73,7 +97,7 @@ namespace PluginManager.Editor
 
         private void OnTreeButtonPressed(TreeItem item, int column, int id)
         {
-            if (item.GetMetadata(0) is Tag tag)
+            if (item?.GetMetadata(0) is Tag tag)
             {
                 switch (id)
                 {
@@ -82,11 +106,14 @@ namespace PluginManager.Editor
                         UpdateTree();
                         break;
                     case BUTTON_ADD:
-                        if (EditorServer.Instance.SelectedTreeEntity is TreeEntity treeEntity &&
-                            treeEntity.GetComponent<TagCollection>() is TagCollection tagCollection)
+                        if (
+                            EditorServer.Instance.SelectedTreeEntity is TreeEntity treeEntity
+                            && treeEntity.GetComponent<TagCollection>()
+                                is TagCollection tagCollection
+                        )
                         {
                             tagCollection.ToggleTag(tag);
-                            treeEntity.GenerateProperties();
+                            treeEntity.DeferredGenerateProperties();
                             UpdateTree();
                         }
                         break;
@@ -94,13 +121,9 @@ namespace PluginManager.Editor
             }
         }
 
-        private void OnTreeExtendedItemDropped(TreeItem heldItem, TreeItem landingItem, int dropSection)
+        private void OnTreeExtendedItemDropped(Godot.Object heldMetadata, Godot.Object landingMetadata, int dropSection)
         {
-            PluginServer.Instance.ReorderTagList(
-                (Tag)heldItem.GetMetadata(0),
-                (Tag)landingItem.GetMetadata(0),
-                dropSection
-            );
+            PluginServer.Instance.ReorderTagList((Tag)heldMetadata, (Tag)landingMetadata, dropSection);
             UpdateTree();
         }
 
@@ -125,4 +148,3 @@ namespace PluginManager.Editor
         }
     }
 }
-

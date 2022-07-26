@@ -4,11 +4,16 @@ using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree.Components
 {
-    public class Name : Component
+    public class Name : BaseOptional
     {
         public string NameString;
+        
         [Signal]
         public delegate void NameChanged(string newName);
+
+        public override string GetName() => "Name";
+
+        public override string SerializeKey() => "name";
 
         public override void ModifyTreeItem(TreeItem treeItem)
         {
@@ -17,27 +22,41 @@ namespace PluginManager.PluginTree.Components
 
         public override void GenerateProperties()
         {
-            LineEdit lineEdit = new LineEdit();
+            base.GenerateProperties();
+            if (!Active)
+                return;
+            LineEdit lineEdit = new()
+            {
+                Text = NameString
+            };
             EditorServer.Instance.AddProperty(lineEdit);
-            lineEdit.Text = NameString;
-            lineEdit.Connect("text_entered", this, nameof(OnLineEditTextEntered));
+            lineEdit.Connect("text_changed", this, nameof(OnLineEditTextChanged));
         }
 
-        public void OnLineEditTextEntered(string new_text)
+        public void OnLineEditTextChanged(string new_text)
         {
             NameString = new_text;
-            TreeEntity.UpdateTreeItem();
+            TreeEntity.DeferredUpdateTreeItem();
             EmitSignal(nameof(NameChanged), NameString);
         }
 
-        public override void Serialize(JObject jobj)
+        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
             jobj.Add("name", NameString);
         }
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            NameString = (string) jobj["name"];
+            NameString = (string)jobj["name"];
+        }
+
+        public override Component Clone()
+        {
+            Name newComp = new()
+            {
+                NameString = this.NameString
+            };
+            return newComp;
         }
     }
 }

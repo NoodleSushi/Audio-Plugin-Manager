@@ -4,9 +4,9 @@ namespace PluginManager.PluginTree
 {
     public class TreeItemContainer : Godot.Object
     {
-        private TreeItem _treeItem;
+        private readonly TreeItem _treeItem;
         public TreeItem TreeItem => _treeItem;
-        private TreeEntity _modifier;
+        private readonly TreeEntity _modifier;
         public TreeEntity Modifier => _modifier;
 
         public TreeItemContainer(TreeItem treeItem, TreeEntity modifier)
@@ -14,12 +14,8 @@ namespace PluginManager.PluginTree
             _treeItem = treeItem;
             _modifier = modifier;
             _modifier.ModifyTreeItem(_treeItem);
-            _modifier.Connect(
-                nameof(TreeEntity.ContentChanged), this, nameof(OnModifierContentChanged)
-            );
-            _modifier.Connect(
-                nameof(TreeEntity.SelectEmitted), this, nameof(OnModifierSelectEmitted)
-            );
+            _modifier.Connect(nameof(TreeEntity.ContentChanged), this, nameof(OnModifierContentChanged));
+            _modifier.Connect(nameof(TreeEntity.SelectEmitted), this, nameof(OnModifierSelectEmitted));
             (_treeItem.GetMetadata(0) as TreeItemContainer)?.Free();
             _treeItem.SetMetadata(0, this);
         }

@@ -8,15 +8,18 @@ namespace PluginManager.PluginTree
     {
         [Signal]
         public delegate void NameChanged(string newName);
+
         [Signal]
         public delegate void VisibilityChanged(bool visible);
+
         [Signal]
         public delegate void Deleting();
         private string _name;
         public string Name
         {
             get => _name;
-            set {
+            set
+            {
                 _name = value;
                 EmitSignal(nameof(NameChanged), _name);
             }
@@ -25,11 +28,13 @@ namespace PluginManager.PluginTree
         public bool Visible
         {
             get => _visible;
-            set {
+            set
+            {
                 _visible = value;
                 EmitSignal(nameof(VisibilityChanged), _visible);
             }
         }
+
         public void NotifyDeletion()
         {
             EmitSignal(nameof(Deleting));
@@ -37,7 +42,7 @@ namespace PluginManager.PluginTree
 
         public void GenerateProperties()
         {
-            LineEdit lineEdit = new LineEdit();
+            LineEdit lineEdit = new();
             EditorServer.Instance.AddProperty(lineEdit);
             lineEdit.Text = Name;
             lineEdit.Connect("text_entered", this, nameof(OnLineEditTextEntered));
@@ -50,9 +55,11 @@ namespace PluginManager.PluginTree
 
         public JObject Serialize()
         {
-            JObject o = new();
-            o.Add("name", _name);
-            o.Add("visible", _visible);
+            JObject o = new()
+            {
+                { "name", _name },
+                { "visible", _visible }
+            };
             return o;
         }
     }

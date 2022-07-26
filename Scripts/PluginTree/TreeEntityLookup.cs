@@ -36,7 +36,9 @@ namespace PluginManager.PluginTree
                 if (_ID2JObject.ContainsKey(id))
                 {
                     JObject jobj = _ID2JObject[id];
-                    TreeEntity treeEntity = TreeEntityFactory.CreateTreeEntityByIdentifier((string) jobj["type"]);
+                    TreeEntity treeEntity = TreeEntityFactory.CreateTreeEntityByIdentifier(
+                        (string)jobj["type"]
+                    );
                     _ID2TreeEntity[id] = treeEntity;
                     _TreeEntity2ID[treeEntity] = id;
                     treeEntity.Deserialize(jobj, this);

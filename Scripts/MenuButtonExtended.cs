@@ -3,11 +3,8 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 
-
 namespace PluginManager
 {
-
-
     public class MenuButtonExtended : MenuButton
     {
         [System.AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
@@ -24,7 +21,7 @@ namespace PluginManager
         }
 
         private int _id = 0;
-        private Dictionary<int, string> _commands = new();
+        private readonly Dictionary<int, string> _commands = new();
 
         public override void _Ready()
         {
@@ -42,10 +39,13 @@ namespace PluginManager
         {
             MethodInfo methodInfo = GetType().GetMethod(methodName);
             // PopupItemAttribute popupItemAttribute = (PopupItemAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(PopupItemAttribute));
-            PopupItemAttribute popupItemAttribute = methodInfo.GetCustomAttribute<PopupItemAttribute>();
+            PopupItemAttribute popupItemAttribute =
+                methodInfo.GetCustomAttribute<PopupItemAttribute>();
 
             if (popupItemAttribute == null)
-                throw new Exception($"method {methodName}() does not have PopupItemAttribute Implemented");
+                throw new Exception(
+                    $"method {methodName}() does not have PopupItemAttribute Implemented"
+                );
             GetPopup().AddItem(popupItemAttribute.Label, _id);
             _commands.Add(_id, methodName);
             _id++;

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Godot;
 using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree
@@ -8,14 +10,23 @@ namespace PluginManager.PluginTree
     {
         private List<TreeEntity> _children = new();
         public ReadOnlyCollection<TreeEntity> Children => _children.AsReadOnly();
+        public bool Collapsed = false;
+
+        public override void ModifyTreeItem(TreeItem treeItem)
+        {
+            base.ModifyTreeItem(treeItem);
+            treeItem.Collapsed = Collapsed;
+        }
 
         private void MakeChildParentThis(TreeEntity child)
         {
-            if (child.Parent != null)
-            {
-                child.Parent.RemoveChild(child);
-            }
+            child.Unparent();
             child.Parent = this;
+        }
+
+        public void SetChildren(List<TreeEntity> newChildren)
+        {
+            _children = newChildren;
         }
 
         public void AddChild(TreeEntity child)
@@ -45,25 +56,64 @@ namespace PluginManager.PluginTree
             _children.Remove(child);
         }
 
+        public void DeferredUpdateTreeItemChildren()
+        {
+            foreach (TreeEntity child in _children)
+            {
+                child.DeferredUpdateTreeItem();
+                if (child is TreeFolder treeFolder)
+                    treeFolder.DeferredUpdateTreeItemChildren();
+            }
+        }
+
         override public JObject Serialize(TreeEntityLookup TEL)
         {
             JObject jobj = base.Serialize(TEL);
-            JArray childrenArray = new();
-            foreach (TreeEntity child in _children)
+            if (_children.Count > 0)
             {
-                childrenArray.Add(TEL.GetID(child));
+                JArray childrenArray = new();
+                foreach (TreeEntity child in _children)
+                {
+                    childrenArray.Add(TEL.GetID(child));
+                }
+                jobj.Add("children", childrenArray);
             }
-            jobj.Add("children", childrenArray);
+            if (Collapsed)
+            {
+                jobj.Add("editor_collapsed", Collapsed);
+            }
             return jobj;
         }
 
         override public void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
-            foreach (int treeEntityID in jobj["children"])
+            if (jobj.ContainsKey("children"))
             {
-                AddChild(TEL.GetTreeEntity(treeEntityID));
+                foreach (int treeEntityID in jobj["children"].Select(v => (int)v))
+                {
+                    AddChild(TEL.GetTreeEntity(treeEntityID));
+                }
             }
+            
+            if (jobj.ContainsKey("editor_collapsed"))
+            {
+                Collapsed = (bool)jobj["editor_collapsed"];
+            }
+        }
+
+        override public TreeEntity Clone(TreeEntity newTreeEntity = null)
+        {
+            TreeFolder newTreeFolder = new();
+            if (newTreeEntity is TreeFolder)
+                newTreeFolder = newTreeEntity as TreeFolder;
+            newTreeFolder = base.Clone(newTreeFolder) as TreeFolder;
+            newTreeFolder.Collapsed = this.Collapsed;
+            foreach (TreeEntity child in Children)
+            {
+                newTreeFolder.AddChild(child.Clone());
+            }
+            return newTreeFolder;
         }
     }
 }

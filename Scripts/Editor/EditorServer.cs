@@ -9,23 +9,27 @@ namespace PluginManager.Editor
         public delegate void FocusedFolderChanged(TreeFolder newFocusedFolder);
         [Signal]
         public delegate void TreeEntityChanged();
+        [Signal]
+        public delegate void CallFolderEditorRefresh();
 
         private static EditorServer _instance;
         private TreeFolder _focusedFolder;
         private VBoxContainer _propertiesContainer;
         private TreeEntity _selectedTreeEntity = null;
+        public object Clipboard;
         public TreeFolder FocusedFolder => _focusedFolder;
         public TreeEntity SelectedTreeEntity
         {
             get => _selectedTreeEntity;
-            set {
+            set
+            {
                 _selectedTreeEntity = value;
                 EmitSignal(nameof(TreeEntityChanged));
             }
         }
         public static EditorServer Instance
-        {   
-            get 
+        {
+            get
             {
                 if (_instance == null)
                 {
@@ -37,7 +41,16 @@ namespace PluginManager.Editor
 
         public EditorServer()
         {
-            PluginServer.Instance.Connect(nameof(PluginServer.Cleared), this, nameof(OnServerCleared));
+            PluginServer.Instance.Connect(
+                nameof(PluginServer.Cleared),
+                this,
+                nameof(OnServerCleared)
+            );
+        }
+
+        public void RefreshFolderEditor()
+        {
+            EmitSignal(nameof(CallFolderEditorRefresh));
         }
 
         // Properties Container

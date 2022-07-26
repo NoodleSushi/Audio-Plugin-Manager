@@ -5,8 +5,9 @@ namespace PluginManager.Editor
 {
     public class FileMenu : MenuButtonExtended
     {
-        private Godot.FileDialog saveFileDialog = new();
-        private Godot.FileDialog openFileDialog = new();
+        private readonly string[] FILE_FILTERS = new string[] { "*.vstdb ; VST Database" };
+        private readonly Godot.FileDialog saveFileDialog = new();
+        private readonly Godot.FileDialog openFileDialog = new();
 
         public override void _Ready()
         {
@@ -15,7 +16,9 @@ namespace PluginManager.Editor
             AddItem(nameof(OpenButtonPressed));
             AddSeparator();
             AddItem(nameof(SaveButtonPressed));
-            AddItem(nameof(TestButtonPressed));
+            // AddItem(nameof(TestButtonPressed));
+            AddSeparator();
+            AddItem(nameof(ShowOutputButtonPressed));
             // AddItem(nameof(OpenButtonPressed));
             // popup.AddSeparator();
             // popup.AddItem("Save");
@@ -34,17 +37,16 @@ namespace PluginManager.Editor
         {
             saveFileDialog.Mode = Godot.FileDialog.ModeEnum.SaveFile;
             saveFileDialog.Access = Godot.FileDialog.AccessEnum.Filesystem;
-            saveFileDialog.Filters = new string[]{"*.vstdb ; VST Database"};
+            saveFileDialog.Filters = FILE_FILTERS;
             saveFileDialog.WindowTitle = "Save VST Database";
             WindowContainer.Instance.AddChild(saveFileDialog);
 
             openFileDialog.Mode = Godot.FileDialog.ModeEnum.OpenFile;
             openFileDialog.Access = Godot.FileDialog.AccessEnum.Filesystem;
-            openFileDialog.Filters = new string[]{"*.vstdb ; VST Database"};
+            openFileDialog.Filters = FILE_FILTERS;
             openFileDialog.WindowTitle = "Open VST Database";
             WindowContainer.Instance.AddChild(openFileDialog);
         }
-
 
         [PopupItemAttribute("New")]
         public void NewButtonPressed()
@@ -63,28 +65,60 @@ namespace PluginManager.Editor
         {
             saveFileDialog.PopupCenteredRatio();
         }
-        
-        [PopupItemAttribute("Test")]
-        public void TestButtonPressed()
+
+        // [PopupItemAttribute("Test")]
+        // public void TestButtonPressed() { }
+        [PopupItemAttribute("Show Output")]
+        public void ShowOutputButtonPressed()
         {
-            
+            WindowContainer.Instance.DisplayOutput();
         }
 
         private void OnOpenFileDialogFileSelected(string path)
         {
-            File file = new();
-            file.Open(path, File.ModeFlags.Read);
-            PluginServer.Instance.Deserialize(file.GetAsText());
-            file.Close();
+            bool success = true;
+            string outputDialog = "An error occurred while reading the VSTDB file.\n\n";
+            using (File file = new())
+            {
+                file.Open(path, File.ModeFlags.Read);
+                try
+                {
+                    success = PluginServer.Instance.Deserialize(file.GetAsText());
+                }
+                catch (System.Exception error)
+                {
+                    success = false;
+                    outputDialog += error.ToString();
+                    PluginServer.Instance.Clear();
+                }
+                file.Close();
+            }
+            if (!success)
+            {
+                WindowContainer.Instance.DisplayOutput(outputDialog);
+            }
         }
 
         private void OnSaveFileDialogFileSelected(string path)
         {
+            bool success = true;
+            string outputDialog = "An error occurred while saving as a VSTDB file.\n\n";
             File file = new();
             file.Open(path, File.ModeFlags.Write);
-            file.StoreString(PluginServer.Instance.Serialize());
+            try
+            {
+                file.StoreString(PluginServer.Instance.Serialize());
+            }
+            catch (System.Exception error)
+            {
+                success = false;
+                outputDialog += error.ToString();
+            }
             file.Close();
-            GD.Print(path);
+            if (!success)
+            {
+                WindowContainer.Instance.DisplayOutput(outputDialog);
+            }
         }
     }
 }

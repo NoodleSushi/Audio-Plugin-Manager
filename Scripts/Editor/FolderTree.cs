@@ -2,15 +2,16 @@ using Godot;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
 
-
 namespace PluginManager.Editor
 {
     public class FolderTree : VBoxContainer
     {
         [Export]
         readonly private NodePath FolderButtonPath;
+
         [Export]
         readonly private NodePath DeleteButtonPath;
+
         [Export]
         readonly private NodePath TreePath;
         private TreeExtended Tree;
@@ -22,10 +23,16 @@ namespace PluginManager.Editor
             Tree.CreateItem();
             Tree.Connect(nameof(TreeExtended.ItemDropped), this, nameof(OnTreeExtendedItemDropped));
             Tree.Connect("item_selected", this, nameof(OnTreeExtendedItemSelected));
-            GetNode<TextureButton>(FolderButtonPath).Connect("pressed", this, nameof(OnFolderButtonPressed));
-            GetNode<TextureButton>(DeleteButtonPath).Connect("pressed", this, nameof(OnDeleteButtonPressed));
+            GetNode<BaseButton>(FolderButtonPath)
+                .Connect("pressed", this, nameof(OnFolderButtonPressed));
+            GetNode<BaseButton>(DeleteButtonPath)
+                .Connect("pressed", this, nameof(OnDeleteButtonPressed));
             PluginServer.Instance.Connect(nameof(PluginServer.Cleared), this, nameof(UpdateTree));
-            PluginServer.Instance.Connect(nameof(PluginServer.Deserialized), this, nameof(UpdateTree));
+            PluginServer.Instance.Connect(
+                nameof(PluginServer.Deserialized),
+                this,
+                nameof(UpdateTree)
+            );
         }
 
         private void UpdateTree()
@@ -47,7 +54,11 @@ namespace PluginManager.Editor
             TreeFolder newFolder = PluginServer.Instance.CreateFolder();
             Name nameComponent = newFolder.GetComponent<Name>();
             nameComponent.NameString = "Folder" + PluginServer.Instance.FolderList.Count;
-            nameComponent.Connect(nameof(PluginTree.Components.Name.NameChanged), this, nameof(OnFolderNameChanged));
+            nameComponent.Connect(
+                nameof(PluginTree.Components.Name.NameChanged),
+                this,
+                nameof(OnFolderNameChanged)
+            );
             UpdateTree();
         }
 
@@ -56,7 +67,10 @@ namespace PluginManager.Editor
             if (Tree.GetSelected()?.GetMetadata(0) is TreeFolder treeFolder)
             {
                 if (EditorServer.Instance.SelectedTreeEntity == treeFolder)
+                {
                     EditorServer.Instance.ClearProperties();
+                    EditorServer.Instance.SelectedTreeEntity = null;
+                }
                 EditorServer.Instance.UnfocusFolder();
                 PluginServer.Instance.RemoveFolder(treeFolder);
                 UpdateTree();
@@ -68,24 +82,19 @@ namespace PluginManager.Editor
             if (Tree.GetSelected()?.GetMetadata(0) is TreeFolder treeFolder)
             {
                 EditorServer.Instance.ChangeFocusedFolder(treeFolder);
-                treeFolder.GenerateProperties();
+                treeFolder.DeferredGenerateProperties();
             }
         }
 
-        private void OnTreeExtendedItemDropped(TreeItem heldItem, TreeItem landingItem, int dropSection)
+        private void OnTreeExtendedItemDropped(Godot.Object heldMetadata, Godot.Object landingMetadata, int dropSection)
         {
-            PluginServer.Instance.ReorderFolderList(
-                (TreeFolder)heldItem.GetMetadata(0),
-                (TreeFolder)landingItem.GetMetadata(0),
-                dropSection
-            );
+            PluginServer.Instance.ReorderFolderList((TreeFolder)heldMetadata, (TreeFolder)landingMetadata, dropSection);
             UpdateTree();
         }
 
-        public void OnFolderNameChanged(string _newName)
+        public void OnFolderNameChanged(string newName)
         {
             UpdateTree();
         }
     }
 }
-

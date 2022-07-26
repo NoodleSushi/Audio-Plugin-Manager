@@ -4,59 +4,86 @@ using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree.Components
 {
-    public class DAWProperties: Component
+    public class DAWProperties : BaseOptional
     {
-        
         public enum DAWFlags
         {
             FLStudio = 1,
             Ableton = 2,
         }
 
-        const int DAWCount = 2;
-        private string[] _DAWQueries = new string[DAWCount];
+        public const int DAWCount = 2;
+        public static readonly Texture[] ICONS = new Texture[] { Resources.ICON_FL, Resources.ICON_LIVE };
+        public string[] DAWQueries = new string[DAWCount] {"", ""};
         public int Flags = 0;
+        public bool IsQueryVisible = true;
 
-        private void ToggleFlag(bool press_state, int idx)
+        public void ToggleFlag(bool press_state, int idx)
         {
-            Flags = (Flags & ~(1 << idx)) + (press_state ? 1 : 0) << idx;
+            Flags = (Flags & ~(0b1 << idx)) | ((press_state ? 0b1 : 0b0) << idx);
         }
 
-        private void ChangeQuery(string newQuery, int idx)
+        public void ChangeQuery(string newQuery, int idx)
         {
-            _DAWQueries[idx] = newQuery;
+            DAWQueries[idx] = newQuery;
         }
+
+        public override string GetName() => "DAW Properties";
+
+        public override string SerializeKey() => "daw";
 
         public override void GenerateProperties()
         {
-            Texture[] icons = new Texture[] { Resources.ICON_FL, Resources.ICON_LIVE};
+            base.GenerateProperties();
+            if (!Active)
+                return;
             for (int idx = 0; idx < DAWCount; idx++)
             {
-                TextureRect icon = new();
-                icon.Texture = icons[idx];
-                icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-                EditorServer.Instance.AddProperty(icon);
+                using (TextureRect icon = new())
+                {
+                    icon.Texture = ICONS[idx];
+                    icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+                    EditorServer.Instance.AddProperty(icon);
+                }
 
-                CheckBox check = new();
-                check.Text = "Exposed";
-                check.Pressed = ((Flags >> idx) & 1) > 0;
-                check.Connect("toggled", this, nameof(ToggleFlag), new Godot.Collections.Array(idx));
-                EditorServer.Instance.AddProperty(check);
+                using (CheckBox check = new())
+                {
+                    check.Text = "Exposed";
+                    check.Pressed = ((Flags >> idx) & 1) > 0;
+                    check.Connect(
+                        "toggled",
+                        this,
+                        nameof(ToggleFlag),
+                        new Godot.Collections.Array(idx)
+                    );
+                    EditorServer.Instance.AddProperty(check);
+                }
 
-                LineEdit line = new();
-                line.Text = _DAWQueries[idx];
-                line.Connect("text_changed", this, nameof(ChangeQuery), new Godot.Collections.Array(idx));
-                EditorServer.Instance.AddProperty(line);
+                if (IsQueryVisible)
+                {
+                    LineEdit line = new()
+                    {
+                        Text = DAWQueries[idx]
+                    };
+                    line.Connect(
+                        "text_changed",
+                        this,
+                        nameof(ChangeQuery),
+                        new Godot.Collections.Array(idx)
+                    );
+                    EditorServer.Instance.AddProperty(line);
+                }
             }
         }
 
-        public override void Serialize(JObject jobj)
+        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
-            foreach (string str in _DAWQueries)
+            base.Serialize(jobj, TEL);
+            foreach (string str in DAWQueries)
             {
                 if (str.Length > 0)
                 {
-                    jobj.Add("DAWqueries", new JArray(_DAWQueries));
+                    jobj.Add("DAWqueries", new JArray(DAWQueries));
                     break;
                 }
             }
@@ -66,18 +93,29 @@ namespace PluginManager.PluginTree.Components
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
+            base.Deserialize(jobj, TEL);
             if (jobj.ContainsKey("DAWqueries"))
             {
-                JArray dawqueries = (JArray) jobj["DAWQueries"];
-                for (int i = 0; i < DAWCount && i < dawqueries.Count; i++)
+                JArray dawQueries = (JArray)jobj["DAWqueries"];
+                for (int i = 0; i < DAWCount && i < dawQueries.Count; i++)
                 {
-                    _DAWQueries[i] = (string) dawqueries[i];
+                    DAWQueries[i] = (string)dawQueries[i];
                 }
             }
             if (jobj.ContainsKey("DAWflags"))
             {
-                Flags = (int) jobj["DAWflags"];
+                Flags = (int)jobj["DAWflags"];
             }
+        }
+
+        public override Component Clone()
+        {
+            DAWProperties newComp = new()
+            {
+                Flags = this.Flags,
+                DAWQueries = (string[])this.DAWQueries.Clone()
+            };
+            return newComp;
         }
     }
 }

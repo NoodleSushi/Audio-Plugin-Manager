@@ -1,7 +1,9 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using PluginManager.PluginTree.Components;
 
 namespace PluginManager.PluginTree
 {
@@ -9,8 +11,10 @@ namespace PluginManager.PluginTree
     {
         [Signal]
         public delegate void Cleared();
+
         [Signal]
         public delegate void FolderDeleting(TreeFolder treeFolder);
+
         [Signal]
         public delegate void Deserialized();
 
@@ -22,8 +26,8 @@ namespace PluginManager.PluginTree
 
         // Singleton Instance
         public static PluginServer Instance
-        {   
-            get 
+        {
+            get
             {
                 if (_instance == null)
                 {
@@ -50,94 +54,65 @@ namespace PluginManager.PluginTree
             // serialize tags
             if (_tagList.Count > 0)
             {
-                JArray jTagList = new();
-                foreach (Tag tag in _tagList)
-                {
-                    jTagList.Add(tag.Serialize());
-                }
-                o.Add("tags", jTagList);
+                o.Add("tags", new JArray(_tagList.Select<Tag, JObject>(tag => tag.Serialize())));
             }
 
             // serialize folders
-            JArray jFolderList = new();
-            foreach (TreeFolder treeFolder in _folderList)
-            {
-                jFolderList.Add(TEL.GetID(treeFolder));
-            }
-            o.Add("folders", jFolderList);
-            
+            o.Add("folders", new JArray(_folderList.Select<TreeFolder, int>(treeFolder => TEL.GetID(treeFolder))));
+
             // dump all other stuff
             o.Add("entities", TEL.DumpSerializedJArray());
 
             return o.ToString();
         }
 
-        public void Deserialize(string json)
+        public bool Deserialize(string json)
         {
             JObject o;
-            try
+            o = JObject.Parse(json);
+            if (o.ContainsKey("tags") && o["tags"] is JArray)
             {
-                o = JObject.Parse(json);
+                foreach (JObject tagObj in o["tags"].Cast<JObject>())
+                {
+                    Tag newTag = new();
+                    if (tagObj.Property("name") is JProperty nameProperty)
+                    {
+                        newTag.Name = (string)nameProperty.Value;
+                    }
+                    if (tagObj.Property("visible") is JProperty visibleProperty)
+                    {
+                        newTag.Visible = (bool)visibleProperty.Value;
+                    }
+                    _tagList.Add(newTag);
+                }
             }
-            catch (JsonReaderException)
+            TreeEntityLookup TEL = new();
+            if (o.TryGetValue("entities", out JToken entitiesToken))
             {
-                return;
+                JArray entities = entitiesToken.Value<JArray>();
+                foreach (JObject entity in entities.Cast<JObject>())
+                {
+                    TEL.AddJObject(entity);
+                }
             }
-            Clear();
-            try
-            {
-                if (o.ContainsKey("tags") && o["tags"] is JArray)
-                {
-                    foreach (JObject tagObj in o["tags"])
-                    {
-                        Tag newTag = new Tag();
-                        if (tagObj.Property("name") is JProperty nameProperty)
-                        {
-                            newTag.Name = (string) nameProperty.Value;
-                        }
-                        if (tagObj.Property("visible") is JProperty visibleProperty)
-                        {
-                            newTag.Visible = (bool) visibleProperty.Value;
-                        }
-                        _tagList.Add(newTag);
-                    }
-                }
-                TreeEntityLookup TEL = new();
-                JToken entitiesToken;
-                JToken foldersToken;
-                if (o.TryGetValue("entities", out entitiesToken))
-                {
-                    JArray entities = entitiesToken.Value<JArray>();
-                    foreach (JObject entity in entities)
-                    {
-                        TEL.AddJObject(entity);
-                    }
-                }
-                else
-                {
-                    Clear();
-                    return;
-                }
-
-                if (o.TryGetValue("folders", out foldersToken))
-                {
-                    JArray folders = foldersToken.Value<JArray>();
-                    foreach (int id in folders)
-                    {
-                        _folderList.Add(TEL.GetTreeEntity(id) as TreeFolder);
-                    }
-                }                
-                else
-                {
-                    Clear();
-                    return;
-                }
-                EmitSignal(nameof(Deserialized));
-            }
-            catch (System.Exception)
+            else
             {
                 Clear();
+                return false;
             }
+
+            if (o.TryGetValue("folders", out JToken foldersToken))
+            {
+                JArray folders = foldersToken.Value<JArray>();
+                _folderList.AddRange(folders.Select(id => TEL.GetTreeEntity((int)id) as TreeFolder));
+            }
+            else
+            {
+                Clear();
+                return false;
+            }
+            EmitSignal(nameof(Deserialized));
+            return true;
         }
 
         // Folder Manipulation
@@ -145,6 +120,7 @@ namespace PluginManager.PluginTree
         public TreeFolder CreateFolder()
         {
             TreeFolder newFolder = TreeEntityFactory.CreateFolder();
+            newFolder.GetComponent<FolderComp>().Visible = false;
             _folderList.Add(newFolder);
             return newFolder;
         }
@@ -155,7 +131,11 @@ namespace PluginManager.PluginTree
             _folderList.Remove(treeFolder);
         }
 
-        public void ReorderFolderList(TreeFolder heldFolder, TreeFolder neighborFolder, int dropSection)
+        public void ReorderFolderList(
+            TreeFolder heldFolder,
+            TreeFolder neighborFolder,
+            int dropSection
+        )
         {
             if (dropSection == 0)
                 return;
@@ -163,21 +143,21 @@ namespace PluginManager.PluginTree
             if (neighbor == heldFolder)
                 return;
             _folderList.Remove(heldFolder);
-            _folderList.Insert(_folderList.IndexOf(neighbor) + ((dropSection == 1) ? 1 : 0), heldFolder);
+            _folderList.Insert(
+                _folderList.IndexOf(neighbor) + ((dropSection == 1) ? 1 : 0),
+                heldFolder
+            );
         }
 
         // Tag Manipulation
 
         public Tag CreateTag()
         {
-            Tag newTag = new()
-            {
-                Name = "Tag"
-            };
+            Tag newTag = new() { Name = "Tag" };
             _tagList.Add(newTag);
             return newTag;
         }
-        
+
         public void RemoveTag(Tag tag)
         {
             tag.NotifyDeletion();

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Editors/FolderTree.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Editors/FolderEditor.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Editors/TagTree.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scripts/Editor/FileMenu.cs" type="Script" id=4]
 [ext_resource path="res://Scripts/Editor/WindowContainer.cs" type="Script" id=5]
+[ext_resource path="res://Scripts/Editor/ToolsMenu.cs" type="Script" id=6]
 
 [node name="MainEditor" type="Control"]
 anchor_right = 1.0
@@ -30,6 +31,7 @@ margin_right = 85.0
 margin_bottom = 20.0
 focus_mode = 2
 text = "Tools"
+script = ExtResource( 6 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 margin_top = 24.0
@@ -71,3 +73,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource( 5 )
+
+[node name="FileDialog" type="FileDialog" parent="."]
+margin_right = 315.0
+margin_bottom = 130.0
+rect_min_size = Vector2( 150, 52.5 )
+window_title = "Open a File or Directory"
+mode = 3
+access = 2

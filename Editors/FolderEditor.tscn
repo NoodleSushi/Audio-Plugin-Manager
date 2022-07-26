@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://icons/Remove.svg" type="Texture" id=1]
 [ext_resource path="res://icons/Folder.svg" type="Texture" id=2]
@@ -6,6 +6,9 @@
 [ext_resource path="res://Scripts/TreeExtended.cs" type="Script" id=4]
 [ext_resource path="res://icons/Node.svg" type="Texture" id=5]
 [ext_resource path="res://icons/Separator.png" type="Texture" id=6]
+[ext_resource path="res://icons/ActionCopy.svg" type="Texture" id=7]
+[ext_resource path="res://icons/ActionPaste.svg" type="Texture" id=8]
+[ext_resource path="res://icons/ActionCut.svg" type="Texture" id=9]
 
 [node name="FolderEditor" type="HBoxContainer"]
 anchor_right = 1.0
@@ -18,7 +21,11 @@ FolderButtonPath = NodePath("VBoxContainer/Buttons/FolderButton")
 PluginButtonPath = NodePath("VBoxContainer/Buttons/PluginButton")
 SeparatorButtonPath = NodePath("VBoxContainer/Buttons/SeparatorButton")
 DeleteButtonPath = NodePath("VBoxContainer/Buttons/DeleteButton")
-PropertiesPath = NodePath("Panel/VBoxContainer2")
+CutButtonPath = NodePath("VBoxContainer/Buttons/CutButton")
+CopyRefButtonPath = NodePath("VBoxContainer/Buttons/CopyRefButton")
+CopyButtonPath = NodePath("VBoxContainer/Buttons/CopyButton")
+PasteButtonPath = NodePath("VBoxContainer/Buttons/PasteButton")
+PropertiesPath = NodePath("Panel/VBoxContainer2/VBoxContainer")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 margin_right = 774.0
@@ -35,7 +42,7 @@ custom_constants/separation = 0
 alignment = 1
 
 [node name="FolderButton" type="TextureButton" parent="VBoxContainer/Buttons"]
-margin_right = 193.0
+margin_right = 96.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 texture_normal = ExtResource( 2 )
@@ -43,8 +50,8 @@ expand = true
 stretch_mode = 3
 
 [node name="PluginButton" type="TextureButton" parent="VBoxContainer/Buttons"]
-margin_left = 193.0
-margin_right = 387.0
+margin_left = 96.0
+margin_right = 193.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 texture_normal = ExtResource( 5 )
@@ -52,8 +59,8 @@ expand = true
 stretch_mode = 3
 
 [node name="SeparatorButton" type="TextureButton" parent="VBoxContainer/Buttons"]
-margin_left = 387.0
-margin_right = 580.0
+margin_left = 193.0
+margin_right = 290.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 texture_normal = ExtResource( 6 )
@@ -61,11 +68,48 @@ expand = true
 stretch_mode = 3
 
 [node name="DeleteButton" type="TextureButton" parent="VBoxContainer/Buttons"]
-margin_left = 580.0
-margin_right = 774.0
+margin_left = 290.0
+margin_right = 387.0
 margin_bottom = 32.0
 size_flags_horizontal = 3
 texture_normal = ExtResource( 1 )
+expand = true
+stretch_mode = 3
+
+[node name="CutButton" type="TextureButton" parent="VBoxContainer/Buttons"]
+margin_left = 387.0
+margin_right = 483.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+texture_normal = ExtResource( 9 )
+expand = true
+stretch_mode = 3
+
+[node name="CopyRefButton" type="TextureButton" parent="VBoxContainer/Buttons"]
+self_modulate = Color( 0.796078, 0.356863, 0.356863, 1 )
+margin_left = 483.0
+margin_right = 580.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+texture_normal = ExtResource( 7 )
+expand = true
+stretch_mode = 3
+
+[node name="CopyButton" type="TextureButton" parent="VBoxContainer/Buttons"]
+margin_left = 580.0
+margin_right = 677.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+texture_normal = ExtResource( 7 )
+expand = true
+stretch_mode = 3
+
+[node name="PasteButton" type="TextureButton" parent="VBoxContainer/Buttons"]
+margin_left = 677.0
+margin_right = 774.0
+margin_bottom = 32.0
+size_flags_horizontal = 3
+texture_normal = ExtResource( 8 )
 expand = true
 stretch_mode = 3
 
@@ -83,10 +127,15 @@ margin_right = 1024.0
 margin_bottom = 600.0
 rect_min_size = Vector2( 250, 0 )
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="Panel"]
+[node name="VBoxContainer2" type="ScrollContainer" parent="Panel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
 margin_top = 8.0
 margin_right = -4.0
 margin_bottom = -8.0
+scroll_horizontal_enabled = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VBoxContainer2"]
+margin_right = 242.0
+size_flags_horizontal = 3
