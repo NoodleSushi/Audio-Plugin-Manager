@@ -68,6 +68,7 @@ namespace PluginManager.PluginTree
 
         public bool Deserialize(string json)
         {
+            Clear();
             JObject o;
             o = JObject.Parse(json);
             if (o.ContainsKey("tags") && o["tags"] is JArray)
