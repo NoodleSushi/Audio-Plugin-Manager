@@ -92,7 +92,7 @@ namespace PluginManager.Editor
             {
                 string newPath = path.GetFile();
                 int index = newPath.LastIndexOf('.');
-                newPath = index == -1 ? newPath : newPath[..index];
+                newPath = index == -1 ? newPath : newPath.Substring(0, index);
                 if (newPath.Length > 0)
                 {
                     if (NameListEditor.Text.Length > 0)

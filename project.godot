@@ -14,10 +14,6 @@ config/name="Plugin Manager"
 run/main_scene="res://MainEditor.tscn"
 config/icon="res://icon.png"
 
-[autoload]
-
-EditorServer="*res://Scripts/Editor/EditorServer.cs"
-
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
