@@ -25,7 +25,7 @@ namespace PluginManager.PluginTree
         private bool _isGeneratingProperties = false;
         public ReadOnlyCollection<Component> Components => _components.AsReadOnly();
 
-        virtual public void ModifyTreeItem(TreeItem treeItem)
+        public virtual void ModifyTreeItem(TreeItem treeItem)
         {
             foreach (Component component in _components)
             {
@@ -112,7 +112,7 @@ namespace PluginManager.PluginTree
 
         public void Unparent() => Parent?.RemoveChild(this);
 
-        virtual public JObject Serialize(TreeEntityLookup TEL)
+        public virtual JObject Serialize(TreeEntityLookup TEL)
         {
             JObject jobj = new();
             foreach (Component comp in _components)
@@ -122,7 +122,7 @@ namespace PluginManager.PluginTree
             return jobj;
         }
 
-        virtual public void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        public virtual void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             foreach (Component comp in _components)
             {
@@ -130,7 +130,7 @@ namespace PluginManager.PluginTree
             }
         }
 
-        virtual public TreeEntity Clone(TreeEntity newTreeEntity = null)
+        public virtual TreeEntity Clone(TreeEntity newTreeEntity = null)
         {
             if (newTreeEntity is null)
                 newTreeEntity = new();

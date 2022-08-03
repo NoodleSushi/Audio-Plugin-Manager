@@ -10,11 +10,11 @@ namespace PluginManager.PluginTree.Components
         public bool Visible = true;
         public bool ShallModifyTreeItem = true;
 
-        virtual public string GetName() => "Component";
+        public virtual string GetName() => "Component";
 
-        virtual public void ModifyTreeItem(TreeItem treeItem) { }
+        public virtual void ModifyTreeItem(TreeItem treeItem) { }
 
-        virtual public void GenerateProperties()
+        public virtual void GenerateProperties()
         {
             Label label = new();
             ColorRect colorRect = new();
@@ -29,10 +29,10 @@ namespace PluginManager.PluginTree.Components
             colorRect.AnchorBottom = 1;
         }
 
-        virtual public void Serialize(JObject jobj, TreeEntityLookup TEL) { }
+        public virtual void Serialize(JObject jobj, TreeEntityLookup TEL) { }
 
-        virtual public void Deserialize(JObject jobj, TreeEntityLookup TEL) { }
+        public virtual void Deserialize(JObject jobj, TreeEntityLookup TEL) { }
 
-        abstract public Component Clone();
+        public abstract Component Clone();
     }
 }

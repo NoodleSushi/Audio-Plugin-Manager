@@ -10,7 +10,8 @@ namespace PluginManager.PluginTree.Components
         public TreeEntity TreeEntityRef
         {
             get => _TreeEntityRef;
-            set {
+            set
+            {
                 _TreeEntityRef = value;
                 if (_TreeEntityRef is not null)
                 {
@@ -71,9 +72,9 @@ namespace PluginManager.PluginTree.Components
                 EditorServer.Instance.AddProperty(newButton);
             }
             TreeEntity.GetComponent<FolderComp>().Visible = _TreeEntityRef is TreeFolder;
-            TreeEntity.GetComponent<Name>().isOptional = true; 
-            TreeEntity.GetComponent<DAWProperties>().isOptional = true; 
-            TreeEntity.GetComponent<TagCollection>().isOptional = true; 
+            TreeEntity.GetComponent<Name>().isOptional = true;
+            TreeEntity.GetComponent<DAWProperties>().isOptional = true;
+            TreeEntity.GetComponent<TagCollection>().isOptional = true;
         }
 
         public void CopyFromRef()

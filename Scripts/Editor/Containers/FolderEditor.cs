@@ -2,40 +2,39 @@ using Godot;
 using System.Collections.Generic;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
-using System;
 using System.Linq;
 
-namespace PluginManager.Editor
+namespace PluginManager.Editor.Containers
 {
     public class FolderEditor : Control
     {
         [Export]
-        readonly private NodePath TreePath;
+        private readonly NodePath TreePath;
 
         [Export]
-        readonly private NodePath FolderButtonPath;
+        private readonly NodePath FolderButtonPath;
 
         [Export]
-        readonly private NodePath PluginButtonPath;
+        private readonly NodePath PluginButtonPath;
 
         [Export]
-        readonly private NodePath SeparatorButtonPath;
+        private readonly NodePath SeparatorButtonPath;
 
         [Export]
-        readonly private NodePath DeleteButtonPath;
+        private readonly NodePath DeleteButtonPath;
         [Export]
-        readonly private NodePath CutButtonPath;
+        private readonly NodePath CutButtonPath;
         [Export]
-        readonly private NodePath CopyRefButtonPath;
+        private readonly NodePath CopyRefButtonPath;
 
         [Export]
-        readonly private NodePath CopyButtonPath;
+        private readonly NodePath CopyButtonPath;
 
         [Export]
-        readonly private NodePath PasteButtonPath;
+        private readonly NodePath PasteButtonPath;
 
         [Export]
-        readonly private NodePath PropertiesPath;
+        private readonly NodePath PropertiesPath;
         private TreeExtended Tree;
         private VBoxContainer PropertiesContainer;
         private TreeEntity Clipboard;
@@ -243,7 +242,7 @@ namespace PluginManager.Editor
         }
 
         private void OnFolderButtonPressed()
-        {   
+        {
             AddOnSelected(TreeEntityFactory.CreateFolder());
         }
 

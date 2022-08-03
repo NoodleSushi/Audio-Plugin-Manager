@@ -2,7 +2,7 @@ using Godot;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
 
-namespace PluginManager.Editor
+namespace PluginManager.Editor.Containers
 {
     public class TagTree : VBoxContainer
     {
@@ -10,13 +10,13 @@ namespace PluginManager.Editor
         private const int BUTTON_ADD = 1;
 
         [Export]
-        readonly private NodePath TagButtonPath;
+        private readonly NodePath TagButtonPath;
 
         [Export]
-        readonly private NodePath DeleteButtonPath;
+        private readonly NodePath DeleteButtonPath;
 
         [Export]
-        readonly private NodePath TreePath;
+        private readonly NodePath TreePath;
         private TreeExtended Tree;
 
         public override void _Ready()

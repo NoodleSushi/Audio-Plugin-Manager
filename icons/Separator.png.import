@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Separator.png-e6ec30f73dcf34158106ff2c781510ab.stex"
+path="res://.import/Separator.png-de090b380aa1a83f1ed6b58daa38cf81.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/Separator.png"
-dest_files=[ "res://.import/Separator.png-e6ec30f73dcf34158106ff2c781510ab.stex" ]
+source_file="res://Icons/Separator.png"
+dest_files=[ "res://.import/Separator.png-de090b380aa1a83f1ed6b58daa38cf81.stex" ]
 
 [params]
 

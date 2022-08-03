@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace PluginManager
+namespace PluginManager.Editor.Containers
 {
     public class TreeExtended : Tree
     {
@@ -79,7 +79,7 @@ namespace PluginManager
                 }
             }
         }
-        
+
         private void ExecuteDrop(TreeItem pointedItem, int dropSection)
         {
             switch (SelectMode)
@@ -87,7 +87,7 @@ namespace PluginManager
                 case Tree.SelectModeEnum.Single:
                     if (!TraverseTest(pointedItem, trav => trav == _heldItem))
                     {
-                        EmitSignal(nameof(ItemDropped), 
+                        EmitSignal(nameof(ItemDropped),
                                 _heldItem.GetMetadata(0) as Godot.Object,
                                 pointedItem.GetMetadata(0) as Godot.Object,
                                 dropSection
@@ -109,9 +109,9 @@ namespace PluginManager
                         }
                     }
                     if (isSafe)
-                        EmitSignal(nameof(ItemsDropped), 
+                        EmitSignal(nameof(ItemsDropped),
                                 selected.Select(treeItem => treeItem.GetMetadata(0) as Godot.Object).ToList(),
-                                pointedItem.GetMetadata(0) as Godot.Object, 
+                                pointedItem.GetMetadata(0) as Godot.Object,
                                 dropSection
                         );
                     break;

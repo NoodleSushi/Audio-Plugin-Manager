@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/VisibleOff.svg-088d4cfbf18bd4ed5d69edc1f49b7704.stex"
+path="res://.import/VisibleOff.svg-309941e4d44ac211f1d1948a4b536566.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/VisibleOff.svg"
-dest_files=[ "res://.import/VisibleOff.svg-088d4cfbf18bd4ed5d69edc1f49b7704.stex" ]
+source_file="res://Icons/VisibleOff.svg"
+dest_files=[ "res://.import/VisibleOff.svg-309941e4d44ac211f1d1948a4b536566.stex" ]
 
 [params]
 

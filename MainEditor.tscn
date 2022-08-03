@@ -3,9 +3,9 @@
 [ext_resource path="res://Editors/FolderTree.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Editors/FolderEditor.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Editors/TagTree.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Scripts/Editor/FileMenu.cs" type="Script" id=4]
-[ext_resource path="res://Scripts/Editor/WindowContainer.cs" type="Script" id=5]
-[ext_resource path="res://Scripts/Editor/ToolsMenu.cs" type="Script" id=6]
+[ext_resource path="res://Scripts/Editor/ToolMenus/FileMenu.cs" type="Script" id=4]
+[ext_resource path="res://Scripts/Editor/Containers/WindowContainer.cs" type="Script" id=5]
+[ext_resource path="res://Scripts/Editor/ToolMenus/ToolsMenu.cs" type="Script" id=6]
 
 [node name="MainEditor" type="Control"]
 anchor_right = 1.0
@@ -68,7 +68,7 @@ margin_left = 254.0
 margin_right = 1024.0
 margin_bottom = 576.0
 
-[node name="WindowContainer" type="Control" parent="."]
+[node name="WindowsContainer" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2

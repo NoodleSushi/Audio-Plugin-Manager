@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/TreeFolderClose.png-8ab24e0da1051d9440204eef939cd1f9.stex"
+path="res://.import/TreeFolderClose.png-f3fd7e9a8ad0213ae19bf371de7fa8eb.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/TreeFolderClose.png"
-dest_files=[ "res://.import/TreeFolderClose.png-8ab24e0da1051d9440204eef939cd1f9.stex" ]
+source_file="res://Icons/TreeFolderClose.png"
+dest_files=[ "res://.import/TreeFolderClose.png-f3fd7e9a8ad0213ae19bf371de7fa8eb.stex" ]
 
 [params]
 

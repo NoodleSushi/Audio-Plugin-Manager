@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/BoxOpen.svg-f56f94e8b20bdffc23bd82e64260cf33.stex"
+path="res://.import/BoxOpen.svg-e9c2811df51befd22fc1b7b0a6e7e882.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/BoxOpen.svg"
-dest_files=[ "res://.import/BoxOpen.svg-f56f94e8b20bdffc23bd82e64260cf33.stex" ]
+source_file="res://Icons/BoxOpen.svg"
+dest_files=[ "res://.import/BoxOpen.svg-e9c2811df51befd22fc1b7b0a6e7e882.stex" ]
 
 [params]
 

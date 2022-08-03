@@ -2,18 +2,18 @@ using Godot;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
 
-namespace PluginManager.Editor
+namespace PluginManager.Editor.Containers
 {
     public class FolderTree : VBoxContainer
     {
         [Export]
-        readonly private NodePath FolderButtonPath;
+        private readonly NodePath FolderButtonPath;
 
         [Export]
-        readonly private NodePath DeleteButtonPath;
+        private readonly NodePath DeleteButtonPath;
 
         [Export]
-        readonly private NodePath TreePath;
+        private readonly NodePath TreePath;
         private TreeExtended Tree;
 
         public override void _Ready()

@@ -7,7 +7,7 @@ namespace PluginManager.PluginTree.Components
     public class Name : BaseOptional
     {
         public string NameString;
-        
+
         [Signal]
         public delegate void NameChanged(string newName);
 

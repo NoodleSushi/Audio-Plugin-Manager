@@ -1,7 +1,6 @@
-using Godot;
-using PluginManager.PluginTree;
+using PluginManager.Editor.Containers;
 
-namespace PluginManager.Editor
+namespace PluginManager.Editor.ToolMenus
 {
     public class ToolsMenu : MenuButtonExtended
     {

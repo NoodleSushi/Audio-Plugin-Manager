@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Live.png-ee00eb58821e2d73decedc27ecb6968e.stex"
+path="res://.import/Live.png-630bb956d709a44a85f89660fb27b185.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/Live.png"
-dest_files=[ "res://.import/Live.png-ee00eb58821e2d73decedc27ecb6968e.stex" ]
+source_file="res://Icons/Live.png"
+dest_files=[ "res://.import/Live.png-630bb956d709a44a85f89660fb27b185.stex" ]
 
 [params]
 

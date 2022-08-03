@@ -2,7 +2,6 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using PluginManager.PluginTree.Components;
 
 namespace PluginManager.PluginTree

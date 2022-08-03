@@ -612,3 +612,7 @@ data_*/
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp,godot,visualstudio,visualstudiocode
+
+Scratchpad/
+*.editorconfig
+*.cd

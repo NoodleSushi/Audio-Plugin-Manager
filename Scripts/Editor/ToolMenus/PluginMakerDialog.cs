@@ -1,12 +1,12 @@
 using Godot;
-using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using PluginManager.Editor.Containers;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
 using System;
 
-namespace PluginManager.Editor
+namespace PluginManager.Editor.ToolMenus
 {
     public class PluginMakerDialog : Godot.AcceptDialog
     {
@@ -163,7 +163,7 @@ namespace PluginManager.Editor
         {
             if (EditorServer.Instance.SelectedTreeEntity is null)
             {
-                WindowContainer.Instance.DisplayOutput("Tree entity is not selected.");
+                WindowContainer.Instance.DisplayError("Tree entity is not selected.");
                 return;
             }
             NameListEditor.Clear();
@@ -190,17 +190,19 @@ namespace PluginManager.Editor
             TagSelectionTree.Update();
         }
 
-        private static string Format(string formatWithNames, IDictionary<string,object> data) {
+        private static string Format(string formatWithNames, IDictionary<string, object> data)
+        {
             int pos = 0;
             var args = new List<object>();
             var fmt = Regex.Replace(
                 formatWithNames,
                 @"(?<={)[^}]+(?=})",
-                new MatchEvaluator(m => {
+                new MatchEvaluator(m =>
+                {
                     var res = (pos++).ToString();
                     var tok = m.Groups[0].Value.Split(':');
                     args.Add(data[tok[0]]);
-                    return tok.Length == 2 ? res+":"+tok[1] : res;
+                    return tok.Length == 2 ? res + ":" + tok[1] : res;
                 })
             );
             return string.Format(fmt, args.ToArray());

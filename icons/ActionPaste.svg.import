@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/ActionPaste.svg-1d4ca7ba9ca6210d3c353c4691f30fd0.stex"
+path="res://.import/ActionPaste.svg-124e03a97aab93579bc566c5936f77df.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/ActionPaste.svg"
-dest_files=[ "res://.import/ActionPaste.svg-1d4ca7ba9ca6210d3c353c4691f30fd0.stex" ]
+source_file="res://Icons/ActionPaste.svg"
+dest_files=[ "res://.import/ActionPaste.svg-124e03a97aab93579bc566c5936f77df.stex" ]
 
 [params]
 

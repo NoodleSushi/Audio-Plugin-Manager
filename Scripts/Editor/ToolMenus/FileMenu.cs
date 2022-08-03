@@ -1,7 +1,9 @@
 using Godot;
 using PluginManager.PluginTree;
+using PluginManager.Editor.Containers;
+using System;
 
-namespace PluginManager.Editor
+namespace PluginManager.Editor.ToolMenus
 {
     public class FileMenu : MenuButtonExtended
     {
@@ -16,18 +18,10 @@ namespace PluginManager.Editor
             AddItem(nameof(OpenButtonPressed));
             AddSeparator();
             AddItem(nameof(SaveButtonPressed));
-            // AddItem(nameof(TestButtonPressed));
             AddSeparator();
             AddItem(nameof(ShowOutputButtonPressed));
-            // AddItem(nameof(OpenButtonPressed));
-            // popup.AddSeparator();
-            // popup.AddItem("Save");
-            // popup.AddItem("Save As...");
-            // popup.AddSeparator();
-            // popup.AddItem("Export To Ableton");
-            // popup.AddItem("Export To FLStudio");
-            // popup.AddSeparator();
-            // popup.AddItem("Show Output");
+            AddItem(nameof(ShowPropertiesButtonPressed));
+
             saveFileDialog.Connect("file_selected", this, nameof(OnSaveFileDialogFileSelected));
             openFileDialog.Connect("file_selected", this, nameof(OnOpenFileDialogFileSelected));
             CallDeferred(nameof(GenerateWindows));
@@ -66,12 +60,16 @@ namespace PluginManager.Editor
             saveFileDialog.PopupCenteredRatio();
         }
 
-        // [PopupItemAttribute("Test")]
-        // public void TestButtonPressed() { }
-        [PopupItemAttribute("Show Output")]
+        [PopupItemAttribute("Output")]
         public void ShowOutputButtonPressed()
         {
             WindowContainer.Instance.DisplayOutput();
+        }
+
+        [PopupItemAttribute("File Properties")]
+        public void ShowPropertiesButtonPressed()
+        {
+            throw new NotImplementedException();
         }
 
         private void OnOpenFileDialogFileSelected(string path)

@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/TreeFolderOpen.png-8fec8efcfd515723cfe74a147c704e1a.stex"
+path="res://.import/TreeFolderOpen.png-27359331f99ca98ed72afab1f638047b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/TreeFolderOpen.png"
-dest_files=[ "res://.import/TreeFolderOpen.png-8fec8efcfd515723cfe74a147c704e1a.stex" ]
+source_file="res://Icons/TreeFolderOpen.png"
+dest_files=[ "res://.import/TreeFolderOpen.png-27359331f99ca98ed72afab1f638047b.stex" ]
 
 [params]
 

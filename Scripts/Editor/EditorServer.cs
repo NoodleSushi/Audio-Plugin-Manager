@@ -16,7 +16,7 @@ namespace PluginManager.Editor
         private TreeFolder _focusedFolder;
         private VBoxContainer _propertiesContainer;
         private TreeEntity _selectedTreeEntity = null;
-        public object Clipboard;
+
         public TreeFolder FocusedFolder => _focusedFolder;
         public TreeEntity SelectedTreeEntity
         {
@@ -38,6 +38,7 @@ namespace PluginManager.Editor
                 return _instance;
             }
         }
+
 
         public EditorServer()
         {

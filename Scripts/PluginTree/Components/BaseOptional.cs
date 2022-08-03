@@ -9,7 +9,7 @@ namespace PluginManager.PluginTree.Components
         public bool isOptional = false;
         public bool Active = true;
 
-        virtual public string SerializeKey() => "";
+        public virtual string SerializeKey() => "";
 
         public override void GenerateProperties()
         {
@@ -54,7 +54,7 @@ namespace PluginManager.PluginTree.Components
             if (jobj.ContainsKey(SerializeKey() + "active"))
             {
                 isOptional = true;
-                Active = (bool) jobj[SerializeKey() + "active"];
+                Active = (bool)jobj[SerializeKey() + "active"];
             }
         }
     }

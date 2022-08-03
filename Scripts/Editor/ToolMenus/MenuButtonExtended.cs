@@ -3,12 +3,12 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace PluginManager
+namespace PluginManager.Editor.ToolMenus
 {
     public class MenuButtonExtended : MenuButton
     {
         [System.AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
-        sealed protected class PopupItemAttribute : Attribute
+        protected sealed class PopupItemAttribute : Attribute
         {
             private readonly string label;
 

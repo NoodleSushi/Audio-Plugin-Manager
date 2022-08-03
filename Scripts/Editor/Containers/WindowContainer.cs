@@ -1,6 +1,6 @@
 using Godot;
 
-namespace PluginManager.Editor
+namespace PluginManager.Editor.Containers
 {
     public class WindowContainer : Godot.Control
     {
@@ -8,6 +8,8 @@ namespace PluginManager.Editor
         public static WindowContainer Instance => _instance;
         private readonly Godot.AcceptDialog outputDialog = new();
         private readonly RichTextLabel outputDialogText = new();
+        private readonly Godot.AcceptDialog errorDialog = new();
+
         public override void _Ready()
         {
             _instance = this;
@@ -20,14 +22,14 @@ namespace PluginManager.Editor
             outputDialog.WindowTitle = "Output";
             outputDialog.Resizable = true;
             outputDialog.AddChild(outputDialogText);
-            outputDialogText.AnchorLeft = 0;
-            outputDialogText.AnchorTop = 0;
-            outputDialogText.AnchorRight = 1;
-            outputDialogText.AnchorBottom = 1;
+            outputDialogText.SetAnchorsPreset(LayoutPreset.Wide);
             outputDialogText.MarginLeft = 8;
             outputDialogText.MarginTop = 8;
             outputDialogText.MarginRight = -8;
             outputDialogText.MarginBottom = -36;
+
+            AddChild(errorDialog);
+            errorDialog.WindowTitle = "Error!";
         }
 
         public void DisplayOutput(string outputText = null)
@@ -35,6 +37,12 @@ namespace PluginManager.Editor
             if (outputText is not null)
                 outputDialogText.Text = outputText;
             outputDialog.PopupCenteredRatio();
+        }
+
+        public void DisplayError(string errorText)
+        {
+            errorDialog.DialogText = errorText;
+            errorDialog.PopupCenteredMinsize();
         }
     }
 }

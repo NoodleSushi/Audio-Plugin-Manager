@@ -14,7 +14,7 @@ namespace PluginManager.PluginTree.Components
 
         public const int DAWCount = 2;
         public static readonly Texture[] ICONS = new Texture[] { Resources.ICON_FL, Resources.ICON_LIVE };
-        public string[] DAWQueries = new string[DAWCount] {"", ""};
+        public string[] DAWQueries = new string[DAWCount] { "", "" };
         public int Flags = 0;
         public bool IsQueryVisible = true;
 

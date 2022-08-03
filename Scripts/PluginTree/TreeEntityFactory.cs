@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using PluginManager.Editor;
 using PluginManager.PluginTree.Components;
 
 namespace PluginManager.PluginTree
@@ -9,7 +10,7 @@ namespace PluginManager.PluginTree
     public static class TreeEntityFactory
     {
         [System.AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
-        sealed protected class IdentifierAttribute : Attribute
+        protected sealed class IdentifierAttribute : Attribute
         {
             private readonly string value;
 
@@ -31,19 +32,19 @@ namespace PluginManager.PluginTree
                     .ToDictionary(m => m.GetCustomAttribute<IdentifierAttribute>().Value, m => m.Name);
             // if (_identif2method == null)
             // {
-                // Dictionary<string, string> identif2method = new();
-                // var methods = typeof(TreeEntityFactory)
-                //     .GetMethods()
-                //     .Where(
-                //         m => m.GetCustomAttributes(typeof(IdentifierAttribute), false).Length > 0
-                //     )
-                //     .ToArray();
+            // Dictionary<string, string> identif2method = new();
+            // var methods = typeof(TreeEntityFactory)
+            //     .GetMethods()
+            //     .Where(
+            //         m => m.GetCustomAttributes(typeof(IdentifierAttribute), false).Length > 0
+            //     )
+            //     .ToArray();
 
-                // foreach (MethodInfo method in methods)
-                // {
-                //     IdentifierAttribute identif = method.GetCustomAttribute<IdentifierAttribute>();
-                //     identif2method[identif.Value] = method.Name;
-                // }
+            // foreach (MethodInfo method in methods)
+            // {
+            //     IdentifierAttribute identif = method.GetCustomAttribute<IdentifierAttribute>();
+            //     identif2method[identif.Value] = method.Name;
+            // }
             // }
             return (TreeEntity)typeof(TreeEntityFactory).GetMethod(_identif2method[identifier]).Invoke(null, null);
         }

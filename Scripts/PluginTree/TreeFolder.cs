@@ -66,7 +66,7 @@ namespace PluginManager.PluginTree
             }
         }
 
-        override public JObject Serialize(TreeEntityLookup TEL)
+        public override JObject Serialize(TreeEntityLookup TEL)
         {
             JObject jobj = base.Serialize(TEL);
             if (_children.Count > 0)
@@ -85,7 +85,7 @@ namespace PluginManager.PluginTree
             return jobj;
         }
 
-        override public void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
             if (jobj.ContainsKey("children"))
@@ -95,14 +95,14 @@ namespace PluginManager.PluginTree
                     AddChild(TEL.GetTreeEntity(treeEntityID));
                 }
             }
-            
+
             if (jobj.ContainsKey("editor_collapsed"))
             {
                 Collapsed = (bool)jobj["editor_collapsed"];
             }
         }
 
-        override public TreeEntity Clone(TreeEntity newTreeEntity = null)
+        public override TreeEntity Clone(TreeEntity newTreeEntity = null)
         {
             TreeFolder newTreeFolder = new();
             if (newTreeEntity is TreeFolder)

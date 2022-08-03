@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/VisibleOn.svg-d8d21fa5caf6543a8a36ba05cd173f5d.stex"
+path="res://.import/VisibleOn.svg-ebce92a363d1123728e2e433e60d6da3.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://icons/VisibleOn.svg"
-dest_files=[ "res://.import/VisibleOn.svg-d8d21fa5caf6543a8a36ba05cd173f5d.stex" ]
+source_file="res://Icons/VisibleOn.svg"
+dest_files=[ "res://.import/VisibleOn.svg-ebce92a363d1123728e2e433e60d6da3.stex" ]
 
 [params]
 
