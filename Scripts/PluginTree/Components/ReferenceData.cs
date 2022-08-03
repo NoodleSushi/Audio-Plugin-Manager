@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree.Components
 {
+    // TODO: Reimplement DAW Properties
     public class ReferenceData : Component
     {
         private TreeEntity _TreeEntityRef;
@@ -82,10 +83,8 @@ namespace PluginManager.PluginTree.Components
             DAWProperties thsProperties = TreeEntity.GetComponent<DAWProperties>();
             DAWProperties refProperties = _TreeEntityRef.GetComponent<DAWProperties>();
             thsProperties.Flags = refProperties.Flags;
-            thsProperties.DAWQueries = (string[])refProperties.DAWQueries.Clone();
-            TreeEntity.GetComponent<Name>().NameString = _TreeEntityRef
-                .GetComponent<Name>()
-                .NameString;
+            thsProperties.DAWQueries = new(refProperties.DAWQueries);
+            TreeEntity.GetComponent<Name>().NameString = _TreeEntityRef.GetComponent<Name>().NameString;
         }
 
         public void OnCopyFromRefButtonPressed()

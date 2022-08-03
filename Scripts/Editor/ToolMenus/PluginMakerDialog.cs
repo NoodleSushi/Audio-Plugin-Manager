@@ -8,7 +8,7 @@ using System;
 
 namespace PluginManager.Editor.ToolMenus
 {
-    public class PluginMakerDialog : Godot.AcceptDialog
+    public class PluginMakerDialog : ConfirmationDialog
     {
         private readonly LineEdit NameListEditor = new();
         private readonly LineEdit NameEditor = new();
@@ -53,14 +53,13 @@ namespace PluginManager.Editor.ToolMenus
 
             vBoxContainer.AddChild(new HSeparator());
 
-            for (int idx = 0; idx < DAWProperties.DAWCount; idx++)
+            for (int idx = 0; idx < PluginServer.Instance.DAWCount; idx++)
             {
-                TextureRect icon = new()
+                Label label = new()
                 {
-                    Texture = DAWProperties.ICONS[idx],
-                    StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered
+                    Text = PluginServer.Instance.DAWList[idx]
                 };
-                vBoxContainer.AddChild(icon);
+                vBoxContainer.AddChild(label);
                 LineEdit dawEditor = new() { PlaceholderText = "{name}" };
                 CheckBox availableEditor = new() { Text = "Exposed" };
                 DAWNameEditors.Add(dawEditor);
@@ -78,8 +77,8 @@ namespace PluginManager.Editor.ToolMenus
 
             Connect("confirmed", this, nameof(OnConfirmed));
 
-            NameGrabberDialog.Mode = Godot.FileDialog.ModeEnum.OpenFiles;
-            NameGrabberDialog.Access = Godot.FileDialog.AccessEnum.Filesystem;
+            NameGrabberDialog.Mode = FileDialog.ModeEnum.OpenFiles;
+            NameGrabberDialog.Access = FileDialog.AccessEnum.Filesystem;
             NameGrabberDialog.WindowTitle = "Grab Names From Files";
             NameGrabberDialog.Connect("files_selected", this, nameof(OnNameGrabberDialogFilesSelected));
             WindowContainer.Instance.AddChild(NameGrabberDialog);
@@ -130,7 +129,7 @@ namespace PluginManager.Editor.ToolMenus
                 TreeEntity treeEntity = TreeEntityFactory.CreatePlugin();
                 treeEntity.GetComponent<Name>().NameString = Format(NameEditor.Text, x);
                 DAWProperties dawProperties = treeEntity.GetComponent<DAWProperties>();
-                for (int idx = 0; idx < DAWProperties.DAWCount; idx++)
+                for (int idx = 0; idx < PluginServer.Instance.DAWCount; idx++)
                 {
                     dawProperties.ChangeQuery(Format(DAWNameEditors[idx].Text, x), idx);
                     dawProperties.ToggleFlag(DAWAvailableEditors[idx].Pressed, idx);
@@ -168,7 +167,7 @@ namespace PluginManager.Editor.ToolMenus
             }
             NameListEditor.Clear();
             NameEditor.Text = "{name}";
-            DAWNameEditors.ForEach(item => item.Text = "{name}");
+            DAWNameEditors.ForEach(item => { item.Text = ""; item.PlaceholderText = "{name}"; });
             DAWAvailableEditors.ForEach(item => item.Pressed = false);
             TagIndexes.Clear();
             FillTagSelectionTree();

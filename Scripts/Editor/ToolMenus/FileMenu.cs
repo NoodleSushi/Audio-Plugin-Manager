@@ -1,7 +1,6 @@
 using Godot;
 using PluginManager.PluginTree;
 using PluginManager.Editor.Containers;
-using System;
 
 namespace PluginManager.Editor.ToolMenus
 {
@@ -10,6 +9,7 @@ namespace PluginManager.Editor.ToolMenus
         private readonly string[] FILE_FILTERS = new string[] { "*.vstdb ; VST Database" };
         private readonly Godot.FileDialog saveFileDialog = new();
         private readonly Godot.FileDialog openFileDialog = new();
+        private readonly PropertiesDialog propertiesDialog = new();
 
         public override void _Ready()
         {
@@ -29,17 +29,19 @@ namespace PluginManager.Editor.ToolMenus
 
         private void GenerateWindows()
         {
-            saveFileDialog.Mode = Godot.FileDialog.ModeEnum.SaveFile;
-            saveFileDialog.Access = Godot.FileDialog.AccessEnum.Filesystem;
+            saveFileDialog.Mode = FileDialog.ModeEnum.SaveFile;
+            saveFileDialog.Access = FileDialog.AccessEnum.Filesystem;
             saveFileDialog.Filters = FILE_FILTERS;
             saveFileDialog.WindowTitle = "Save VST Database";
             WindowContainer.Instance.AddChild(saveFileDialog);
 
-            openFileDialog.Mode = Godot.FileDialog.ModeEnum.OpenFile;
-            openFileDialog.Access = Godot.FileDialog.AccessEnum.Filesystem;
+            openFileDialog.Mode = FileDialog.ModeEnum.OpenFile;
+            openFileDialog.Access = FileDialog.AccessEnum.Filesystem;
             openFileDialog.Filters = FILE_FILTERS;
             openFileDialog.WindowTitle = "Open VST Database";
             WindowContainer.Instance.AddChild(openFileDialog);
+
+            WindowContainer.Instance.AddChild(propertiesDialog);
         }
 
         [PopupItemAttribute("New")]
@@ -69,7 +71,7 @@ namespace PluginManager.Editor.ToolMenus
         [PopupItemAttribute("File Properties")]
         public void ShowPropertiesButtonPressed()
         {
-            throw new NotImplementedException();
+            propertiesDialog.Popup();
         }
 
         private void OnOpenFileDialogFileSelected(string path)

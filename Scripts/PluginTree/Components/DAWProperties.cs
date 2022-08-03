@@ -1,4 +1,5 @@
 ﻿using Godot;
+using System.Collections.Generic;
 using PluginManager.Editor;
 using Newtonsoft.Json.Linq;
 
@@ -6,22 +7,25 @@ namespace PluginManager.PluginTree.Components
 {
     public class DAWProperties : BaseOptional
     {
-        public enum DAWFlags
-        {
-            FLStudio = 1,
-            Ableton = 2,
-        }
-
-        public const int DAWCount = 2;
-        public static readonly Texture[] ICONS = new Texture[] { Resources.ICON_FL, Resources.ICON_LIVE };
-        public string[] DAWQueries = new string[DAWCount] { "", "" };
+        public List<string> DAWQueries = new();
         public int Flags = 0;
         public bool IsQueryVisible = true;
+
+        public DAWProperties()
+        {
+            for (var i = 0; i < PluginServer.Instance.DAWCount; i++)
+            {
+                DAWQueries.Add("");
+            }
+        }
 
         public void ToggleFlag(bool press_state, int idx)
         {
             Flags = (Flags & ~(0b1 << idx)) | ((press_state ? 0b1 : 0b0) << idx);
+            Flags &= (0b1 << PluginServer.Instance.DAWCount) - 1;
         }
+
+        public bool GetFlagState(int idx) => ((Flags >> idx) & 1) > 0;
 
         public void ChangeQuery(string newQuery, int idx)
         {
@@ -37,19 +41,18 @@ namespace PluginManager.PluginTree.Components
             base.GenerateProperties();
             if (!Active)
                 return;
-            for (int idx = 0; idx < DAWCount; idx++)
+            for (int idx = 0; idx < PluginServer.Instance.DAWCount; idx++)
             {
-                using (TextureRect icon = new())
+                using (Label label = new())
                 {
-                    icon.Texture = ICONS[idx];
-                    icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
-                    EditorServer.Instance.AddProperty(icon);
+                    label.Text = PluginServer.Instance.DAWList[idx];
+                    EditorServer.Instance.AddProperty(label);
                 }
 
                 using (CheckBox check = new())
                 {
                     check.Text = "Exposed";
-                    check.Pressed = ((Flags >> idx) & 1) > 0;
+                    check.Pressed = GetFlagState(idx);
                     check.Connect(
                         "toggled",
                         this,
@@ -65,6 +68,10 @@ namespace PluginManager.PluginTree.Components
                     {
                         Text = DAWQueries[idx]
                     };
+                    if (TreeEntity.GetComponent<Name>() is Name nameComponent)
+                    {
+                        line.PlaceholderText = nameComponent.NameString;
+                    }
                     line.Connect(
                         "text_changed",
                         this,
@@ -97,7 +104,7 @@ namespace PluginManager.PluginTree.Components
             if (jobj.ContainsKey("DAWqueries"))
             {
                 JArray dawQueries = (JArray)jobj["DAWqueries"];
-                for (int i = 0; i < DAWCount && i < dawQueries.Count; i++)
+                for (int i = 0; i < PluginServer.Instance.DAWCount && i < dawQueries.Count; i++)
                 {
                     DAWQueries[i] = (string)dawQueries[i];
                 }
@@ -112,9 +119,9 @@ namespace PluginManager.PluginTree.Components
         {
             DAWProperties newComp = new()
             {
-                Flags = this.Flags,
-                DAWQueries = (string[])this.DAWQueries.Clone()
+                Flags = this.Flags
             };
+            newComp.DAWQueries = new(this.DAWQueries);
             return newComp;
         }
     }

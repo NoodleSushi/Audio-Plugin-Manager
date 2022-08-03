@@ -17,11 +17,18 @@ namespace PluginManager.PluginTree
         [Signal]
         public delegate void Deserialized();
 
+        [Signal]
+        public delegate void DAWListSizeChanged();
+
         private static PluginServer _instance;
         private List<TreeFolder> _folderList = new();
         private List<Tag> _tagList = new();
+        private List<string> _dawList = new();
+
         public IList<TreeFolder> FolderList => _folderList.AsReadOnly();
         public IList<Tag> TagList => _tagList.AsReadOnly();
+        public IList<string> DAWList => _dawList.AsReadOnly();
+        public int DAWCount => _dawList.Count;
 
         // Singleton Instance
         public static PluginServer Instance
@@ -36,11 +43,25 @@ namespace PluginManager.PluginTree
             }
         }
 
+        // Instantiate
+        public PluginServer()
+        {
+            DAWListDefault();
+        }
+
+        public void DAWListDefault()
+        {
+            _dawList.Add("FLStudio");
+            _dawList.Add("Ableton");
+        }
+
         // Some Methods
         public void Clear()
         {
             _folderList = new();
             _tagList = new();
+            _dawList = new();
+            DAWListDefault();
             EmitSignal(nameof(Cleared));
         }
 
@@ -54,6 +75,12 @@ namespace PluginManager.PluginTree
             if (_tagList.Count > 0)
             {
                 o.Add("tags", new JArray(_tagList.Select<Tag, JObject>(tag => tag.Serialize())));
+            }
+
+            // serialize daws
+            if (_dawList.Count > 0)
+            {
+                o.Add("daws", new JArray(_dawList));
             }
 
             // serialize folders
@@ -86,6 +113,19 @@ namespace PluginManager.PluginTree
                     _tagList.Add(newTag);
                 }
             }
+
+            if (o.ContainsKey("daws") && o["daws"] is JArray)
+            {
+                foreach (string daw in o["daws"].Select(v => (string)v))
+                {
+                    _dawList.Add(daw);
+                }
+            }
+            else
+            {
+                DAWListDefault();
+            }
+
             TreeEntityLookup TEL = new();
             if (o.TryGetValue("entities", out JToken entitiesToken))
             {

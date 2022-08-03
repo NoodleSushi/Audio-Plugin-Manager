@@ -38,9 +38,7 @@ namespace PluginManager.Editor.ToolMenus
         protected void AddItem(string methodName)
         {
             MethodInfo methodInfo = GetType().GetMethod(methodName);
-            // PopupItemAttribute popupItemAttribute = (PopupItemAttribute)Attribute.GetCustomAttribute(methodInfo, typeof(PopupItemAttribute));
-            PopupItemAttribute popupItemAttribute =
-                methodInfo.GetCustomAttribute<PopupItemAttribute>();
+            PopupItemAttribute popupItemAttribute = methodInfo.GetCustomAttribute<PopupItemAttribute>();
 
             if (popupItemAttribute == null)
                 throw new Exception(
