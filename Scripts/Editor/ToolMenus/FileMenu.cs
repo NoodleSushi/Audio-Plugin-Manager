@@ -7,8 +7,8 @@ namespace PluginManager.Editor.ToolMenus
     public class FileMenu : MenuButtonExtended
     {
         private readonly string[] FILE_FILTERS = new string[] { "*.vstdb ; VST Database" };
-        private readonly Godot.FileDialog saveFileDialog = new();
-        private readonly Godot.FileDialog openFileDialog = new();
+        private readonly FileDialog saveFileDialog = new();
+        private readonly FileDialog openFileDialog = new();
         private readonly PropertiesDialog propertiesDialog = new();
 
         public override void _Ready()
