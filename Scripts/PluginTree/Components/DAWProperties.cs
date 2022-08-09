@@ -116,13 +116,11 @@ namespace PluginManager.PluginTree.Components
             }
         }
 
-        public override Component Clone()
+        public override Component Clone(Component newComponent = null)
         {
-            DAWProperties newComp = new()
-            {
-                Flags = this.Flags
-            };
-            newComp.DAWQueries = new(this.DAWQueries);
+            DAWProperties newComp = newComponent as DAWProperties ?? new DAWProperties();
+            base.Clone(newComp);
+            newComp.Flags = this.Flags;
             return newComp;
         }
     }

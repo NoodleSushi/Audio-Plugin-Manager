@@ -50,12 +50,11 @@ namespace PluginManager.PluginTree.Components
             NameString = (string)jobj["name"];
         }
 
-        public override Component Clone()
+        public override Component Clone(Component newComponent = null)
         {
-            Name newComp = new()
-            {
-                NameString = this.NameString
-            };
+            Name newComp = newComponent as Name ?? new Name();
+            base.Clone(newComp);
+            newComp.NameString = this.NameString;
             return newComp;
         }
     }

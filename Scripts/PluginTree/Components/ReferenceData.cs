@@ -99,12 +99,10 @@ namespace PluginManager.PluginTree.Components
             TreeEntity.DeferredUpdateTreeItem();
         }
 
-        public override Component Clone()
+        public override Component Clone(Component newComponent = null)
         {
-            ReferenceData newComp = new()
-            {
-                _TreeEntityRef = this._TreeEntityRef
-            };
+            ReferenceData newComp = newComponent as ReferenceData ?? new ReferenceData();
+            newComp._TreeEntityRef = this._TreeEntityRef;
             return newComp;
         }
 

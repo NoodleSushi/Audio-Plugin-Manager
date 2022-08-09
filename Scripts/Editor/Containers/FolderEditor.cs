@@ -285,7 +285,7 @@ namespace PluginManager.Editor.Containers
 
         private void OnCopyRefButtonPressed()
         {
-            if (GetSelectedEntity() is TreeEntity treeEntity && treeEntity.GetComponent<Identifier>().value != "Reference")
+            if (GetSelectedEntity() is TreeEntity treeEntity && treeEntity.GetComponent<Identifier>().Value != "Reference")
             {
                 _isCut = false;
                 TreeEntity folderRef = TreeEntityFactory.CreateReference();

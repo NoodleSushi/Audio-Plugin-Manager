@@ -33,6 +33,6 @@ namespace PluginManager.PluginTree.Components
 
         public virtual void Deserialize(JObject jobj, TreeEntityLookup TEL) { }
 
-        public abstract Component Clone();
+        public abstract Component Clone(Component newComponent = null);
     }
 }

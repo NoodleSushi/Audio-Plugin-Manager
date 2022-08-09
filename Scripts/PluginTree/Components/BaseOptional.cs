@@ -4,7 +4,7 @@ using PluginManager.Editor;
 
 namespace PluginManager.PluginTree.Components
 {
-    public class BaseOptional : Component
+    public abstract class BaseOptional : Component
     {
         public bool isOptional = false;
         public bool Active = true;
@@ -33,13 +33,12 @@ namespace PluginManager.PluginTree.Components
             TreeEntity.DeferredUpdateTreeItem();
         }
 
-        public override Component Clone()
+        public override Component Clone(Component newComponent)
         {
-            BaseOptional newComp = new()
-            {
-                isOptional = this.isOptional,
-                Active = this.Active
-            };
+            if (newComponent is not BaseOptional newComp)
+                throw new System.Exception();
+            newComp.isOptional = this.isOptional;
+            newComp.Active = this.Active;
             return newComp;
         }
 

@@ -54,7 +54,7 @@ namespace PluginManager.PluginTree
         {
             TreeFolder treeEntity = new() { Icon = Resources.ICON_FOLDER_CLOSE };
             Identifier identifier = treeEntity.AddComponent<Identifier>();
-            identifier.value = "Folder";
+            identifier.Value = "Folder";
             Name nameComp = treeEntity.AddComponent<Name>();
             nameComp.NameString = "Folder";
             treeEntity.AddComponent<FolderComp>();
@@ -68,7 +68,7 @@ namespace PluginManager.PluginTree
         {
             TreeEntity treeEntity = new() { Icon = Resources.ICON_NODE };
             Identifier identifier = treeEntity.AddComponent<Identifier>();
-            identifier.value = "Plugin";
+            identifier.Value = "Plugin";
             Name nameComp = treeEntity.AddComponent<Name>();
             nameComp.NameString = "Plugin";
             treeEntity.AddComponent<DAWProperties>();
@@ -81,7 +81,7 @@ namespace PluginManager.PluginTree
         {
             TreeEntity treeEntity = new();
             Identifier identifier = treeEntity.AddComponent<Identifier>();
-            identifier.value = "Reference";
+            identifier.Value = "Reference";
             treeEntity.AddComponent<ReferenceData>();
             treeEntity.AddComponent<Name>();
             treeEntity.AddComponent<FolderComp>();
@@ -95,7 +95,7 @@ namespace PluginManager.PluginTree
         {
             TreeEntity treeEntity = new() { Icon = Resources.ICON_SEPARATOR };
             Identifier identifier = treeEntity.AddComponent<Identifier>();
-            identifier.value = "Separator";
+            identifier.Value = "Separator";
             return treeEntity;
         }
     }

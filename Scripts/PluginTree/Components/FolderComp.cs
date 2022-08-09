@@ -36,12 +36,10 @@ namespace PluginManager.PluginTree.Components
             TreeEntity.DeferredUpdateTreeItem();
         }
 
-        public override Component Clone()
+        public override Component Clone(Component newComponent = null)
         {
-            FolderComp newComp = new()
-            {
-                Collapsed = this.Collapsed
-            };
+            FolderComp newComp = newComponent as FolderComp ?? new FolderComp();
+            newComp.Collapsed = this.Collapsed;
             return newComp;
         }
 

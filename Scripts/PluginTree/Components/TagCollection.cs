@@ -136,9 +136,10 @@ namespace PluginManager.PluginTree.Components
             }
         }
 
-        public override Component Clone()
+        public override Component Clone(Component newComponent = null)
         {
-            TagCollection newComp = new();
+            TagCollection newComp = newComponent as TagCollection ?? new TagCollection();
+            base.Clone(newComp);
             newComp.SetTagList(new List<Tag>(this._TagList));
             return newComp;
         }

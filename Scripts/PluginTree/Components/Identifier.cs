@@ -4,7 +4,7 @@ namespace PluginManager.PluginTree.Components
 {
     public class Identifier : Component
     {
-        public string value;
+        public string Value;
 
         public Identifier()
         {
@@ -12,15 +12,13 @@ namespace PluginManager.PluginTree.Components
         }
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
-            jobj.Add("type", value);
+            jobj.Add("type", Value);
         }
 
-        public override Component Clone()
+        public override Component Clone(Component newComponent = null)
         {
-            Identifier newComp = new()
-            {
-                value = this.value
-            };
+            Identifier newComp = newComponent as Identifier ?? new Identifier();
+            newComp.Value = this.Value;
             return newComp;
         }
     }
