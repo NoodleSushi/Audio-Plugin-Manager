@@ -71,7 +71,7 @@ namespace PluginManager.PluginTree.Components
 
         public override string GetName() => "Tag Collection";
 
-        public override string SerializeKey() => "tag";
+        public override string SerializeIdentifier() => "tag";
 
         public override void GenerateProperties()
         {

@@ -17,6 +17,7 @@ namespace PluginManager.PluginTree.Components
             {
                 DAWQueries.Add("");
             }
+            Flags = (0b1 << PluginServer.Instance.DAWCount) - 1;
         }
 
         public void ToggleFlag(bool press_state, int idx)
@@ -34,7 +35,7 @@ namespace PluginManager.PluginTree.Components
 
         public override string GetName() => "DAW Properties";
 
-        public override string SerializeKey() => "daw";
+        public override string SerializeIdentifier() => "daw";
 
         public override void GenerateProperties()
         {

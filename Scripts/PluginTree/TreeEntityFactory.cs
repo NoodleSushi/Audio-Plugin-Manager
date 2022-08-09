@@ -63,6 +63,19 @@ namespace PluginManager.PluginTree
             return treeEntity;
         }
 
+        [IdentifierAttribute("Plugin")]
+        public static TreeEntity CreatePlugin()
+        {
+            TreeEntity treeEntity = new() { Icon = Resources.ICON_NODE };
+            Identifier identifier = treeEntity.AddComponent<Identifier>();
+            identifier.value = "Plugin";
+            Name nameComp = treeEntity.AddComponent<Name>();
+            nameComp.NameString = "Plugin";
+            treeEntity.AddComponent<DAWProperties>();
+            treeEntity.AddComponent<TagCollection>();
+            return treeEntity;
+        }
+
         [IdentifierAttribute("Reference")]
         public static TreeEntity CreateReference()
         {
@@ -72,20 +85,6 @@ namespace PluginManager.PluginTree
             treeEntity.AddComponent<ReferenceData>();
             treeEntity.AddComponent<Name>();
             treeEntity.AddComponent<FolderComp>();
-            treeEntity.AddComponent<DAWProperties>();
-            treeEntity.AddComponent<TagCollection>();
-
-            return treeEntity;
-        }
-
-        [IdentifierAttribute("Plugin")]
-        public static TreeEntity CreatePlugin()
-        {
-            TreeEntity treeEntity = new() { Icon = Resources.ICON_NODE };
-            Identifier identifier = treeEntity.AddComponent<Identifier>();
-            identifier.value = "Plugin";
-            Name nameComp = treeEntity.AddComponent<Name>();
-            nameComp.NameString = "Plugin";
             treeEntity.AddComponent<DAWProperties>();
             treeEntity.AddComponent<TagCollection>();
             return treeEntity;

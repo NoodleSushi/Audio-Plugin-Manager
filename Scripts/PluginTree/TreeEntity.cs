@@ -1,9 +1,9 @@
-using Godot;
-using PluginManager.Editor;
-using PluginManager.PluginTree.Components;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Godot;
+using PluginManager.Editor;
+using PluginManager.PluginTree.Components;
 using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree

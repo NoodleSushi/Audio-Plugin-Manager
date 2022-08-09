@@ -13,7 +13,7 @@ namespace PluginManager.PluginTree.Components
 
         public override string GetName() => "Name";
 
-        public override string SerializeKey() => "name";
+        public override string SerializeIdentifier() => "name";
 
         public override void ModifyTreeItem(TreeItem treeItem)
         {

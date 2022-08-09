@@ -56,12 +56,13 @@ namespace PluginManager.PluginTree
         }
 
         // Some Methods
-        public void Clear()
+        public void Clear(bool loadDAWList = true)
         {
             _folderList = new();
             _tagList = new();
             _dawList = new();
-            DAWListDefault();
+            if (loadDAWList)
+                DAWListDefault();
             EmitSignal(nameof(Cleared));
         }
 
@@ -94,7 +95,7 @@ namespace PluginManager.PluginTree
 
         public bool Deserialize(string json)
         {
-            Clear();
+            Clear(false);
             JObject o;
             o = JObject.Parse(json);
             if (o.ContainsKey("tags") && o["tags"] is JArray)

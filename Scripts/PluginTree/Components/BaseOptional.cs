@@ -9,7 +9,7 @@ namespace PluginManager.PluginTree.Components
         public bool isOptional = false;
         public bool Active = true;
 
-        public virtual string SerializeKey() => "";
+        public virtual string SerializeIdentifier() => "";
 
         public override void GenerateProperties()
         {
@@ -43,18 +43,23 @@ namespace PluginManager.PluginTree.Components
             return newComp;
         }
 
+        private string GetSerializeKey()
+        {
+            return SerializeIdentifier() + "_active";
+        }
+
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
             if (isOptional && Active)
-                jobj.Add(SerializeKey() + "active", true);
+                jobj.Add(GetSerializeKey(), true);
         }
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            if (jobj.ContainsKey(SerializeKey() + "active"))
+            if (jobj.ContainsKey(GetSerializeKey()))
             {
                 isOptional = true;
-                Active = (bool)jobj[SerializeKey() + "active"];
+                Active = (bool)jobj[GetSerializeKey()];
             }
         }
     }
