@@ -7,8 +7,6 @@ namespace PluginManager.Editor.ToolMenus
     public class FileMenu : MenuButtonExtended
     {
         private readonly string[] FILE_FILTERS = new string[] { "*.vstdb ; VST Database" };
-        // private readonly FileDialog saveFileDialog = new();
-        // private readonly FileDialog openFileDialog = new();
         private readonly PropertiesDialog propertiesDialog = new();
 
         public override void _Ready()
@@ -22,25 +20,11 @@ namespace PluginManager.Editor.ToolMenus
             AddItem(nameof(ShowOutputButtonPressed));
             AddItem(nameof(ShowPropertiesButtonPressed));
 
-            // saveFileDialog.Connect("file_selected", this, nameof(OnSaveFileDialogFileSelected));
-            // openFileDialog.Connect("file_selected", this, nameof(OnOpenFileDialogFileSelected));
             CallDeferred(nameof(GenerateWindows));
         }
 
         private void GenerateWindows()
         {
-            // saveFileDialog.Mode = FileDialog.ModeEnum.SaveFile;
-            // saveFileDialog.Access = FileDialog.AccessEnum.Filesystem;
-            // saveFileDialog.Filters = FILE_FILTERS;
-            // saveFileDialog.WindowTitle = "Save VST Database";
-            // WindowContainer.Instance.AddChild(saveFileDialog);
-
-            // openFileDialog.Mode = FileDialog.ModeEnum.OpenFile;
-            // openFileDialog.Access = FileDialog.AccessEnum.Filesystem;
-            // openFileDialog.Filters = FILE_FILTERS;
-            // openFileDialog.WindowTitle = "Open VST Database";
-            // WindowContainer.Instance.AddChild(openFileDialog);
-
             WindowContainer.Instance.AddChild(propertiesDialog);
         }
 
@@ -60,7 +44,6 @@ namespace PluginManager.Editor.ToolMenus
                 FILE_FILTERS,
                 "Open VST Database"
             );
-            // openFileDialog.PopupCenteredRatio();
         }
 
         [PopupItemAttribute("Save")]
