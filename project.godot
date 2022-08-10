@@ -17,6 +17,7 @@ config/icon="res://icon.png"
 [autoload]
 
 ConfigServer="*res://Scripts/Editor/ConfigServer.cs"
+PluginServer="*res://Scripts/PluginTree/PluginServer.cs"
 
 [gui]
 

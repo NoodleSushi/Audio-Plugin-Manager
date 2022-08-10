@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using PluginManager.PluginTree.Components;
+using GDArray = Godot.Collections.Array;
 
 namespace PluginManager.PluginTree
 {
-    public class PluginServer : Godot.Object
+    public class PluginServer : Node
     {
         [Signal]
         public delegate void Cleared();
@@ -26,8 +27,10 @@ namespace PluginManager.PluginTree
         private List<string> _dawList = new();
 
         public IList<TreeFolder> FolderList => _folderList.AsReadOnly();
+        public GDArray GDFolderList => new(_folderList);
         public IList<Tag> TagList => _tagList.AsReadOnly();
         public IList<string> DAWList => _dawList.AsReadOnly();
+        public GDArray GDDAWList => new(_dawList);
         public int DAWCount => _dawList.Count;
 
         // Singleton Instance

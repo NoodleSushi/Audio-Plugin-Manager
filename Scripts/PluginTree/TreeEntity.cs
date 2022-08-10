@@ -24,6 +24,7 @@ namespace PluginManager.PluginTree
         private bool _isUpdatingTreeItem = false;
         private bool _isGeneratingProperties = false;
         public ReadOnlyCollection<Component> Components => _components.AsReadOnly();
+        public string GDName => GetComponent<Name>().NameString;
 
         public virtual void ModifyTreeItem(TreeItem treeItem)
         {
