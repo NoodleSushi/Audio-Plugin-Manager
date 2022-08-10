@@ -49,8 +49,8 @@ namespace PluginManager.PluginTree.Components
 
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
-            if (isOptional && Active)
-                jobj.Add(GetSerializeKey(), true);
+            if (isOptional)
+                jobj.Add(GetSerializeKey(), Active);
         }
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
