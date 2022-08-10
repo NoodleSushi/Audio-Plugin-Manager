@@ -16,7 +16,6 @@ namespace PluginManager.Editor.ToolMenus
         private readonly List<CheckBox> DAWAvailableEditors = new();
         private readonly Tree TagSelectionTree = new();
         private readonly HashSet<int> TagIndexes = new();
-        private readonly FileDialog NameGrabberDialog = new();
 
         public override void _Ready()
         {
@@ -76,12 +75,6 @@ namespace PluginManager.Editor.ToolMenus
             vBoxContainer.AddChild(TagSelectionTree);
 
             Connect("confirmed", this, nameof(OnConfirmed));
-
-            NameGrabberDialog.Mode = FileDialog.ModeEnum.OpenFiles;
-            NameGrabberDialog.Access = FileDialog.AccessEnum.Filesystem;
-            NameGrabberDialog.WindowTitle = "Grab Names From Files";
-            NameGrabberDialog.Connect("files_selected", this, nameof(OnNameGrabberDialogFilesSelected));
-            WindowContainer.Instance.AddChild(NameGrabberDialog);
         }
 
         private void OnNameGrabberDialogFilesSelected(string[] paths)
@@ -103,7 +96,12 @@ namespace PluginManager.Editor.ToolMenus
 
         private void OnNameGrabberButtonPressed()
         {
-            NameGrabberDialog.PopupCenteredRatio();
+            WindowContainer.Instance.DisplayFileDialog(
+                FileDialog.ModeEnum.OpenFiles,
+                this,
+                nameof(OnNameGrabberDialogFilesSelected),
+                windowTitle: "Grab Names From Files"
+            );
         }
 
         private void OnTagSelectionTreeButtonPressed(TreeItem item, int column, int id)
