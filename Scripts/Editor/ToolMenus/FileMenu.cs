@@ -56,7 +56,6 @@ namespace PluginManager.Editor.ToolMenus
                 FILE_FILTERS,
                 "Save VST Database"
             );
-            // saveFileDialog.PopupCenteredRatio();
         }
 
         [PopupItemAttribute("Output")]
