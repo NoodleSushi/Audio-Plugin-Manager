@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using GDArray = Godot.Collections.Array;
 
 namespace PluginManager.PluginTree.Components
 {
@@ -22,7 +23,7 @@ namespace PluginManager.PluginTree.Components
             if (!HasTag(tag))
             {
                 _TagList.Add(tag);
-                tag.Connect(nameof(Tag.Deleting), this, nameof(RemoveTag), new Godot.Collections.Array(tag));
+                tag.Connect(nameof(Tag.Deleting), this, nameof(RemoveTag), new GDArray(tag));
                 tag.Connect(nameof(Tag.VisibilityChanged), this, nameof(OnTagVisibilityChanged));
                 DeferredUpdateTreeItems();
             }

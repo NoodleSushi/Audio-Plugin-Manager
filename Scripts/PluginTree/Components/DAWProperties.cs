@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using PluginManager.Editor;
 using Newtonsoft.Json.Linq;
+using GDArray = Godot.Collections.Array;
 
 namespace PluginManager.PluginTree.Components
 {
@@ -58,7 +59,7 @@ namespace PluginManager.PluginTree.Components
                         "toggled",
                         this,
                         nameof(ToggleFlag),
-                        new Godot.Collections.Array(idx)
+                        new GDArray(idx)
                     );
                     EditorServer.Instance.AddProperty(check);
                 }
@@ -77,7 +78,7 @@ namespace PluginManager.PluginTree.Components
                         "text_changed",
                         this,
                         nameof(ChangeQuery),
-                        new Godot.Collections.Array(idx)
+                        new GDArray(idx)
                     );
                     EditorServer.Instance.AddProperty(line);
                 }
