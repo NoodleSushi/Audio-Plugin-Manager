@@ -7,7 +7,6 @@ namespace PluginManager.Editor.ToolMenus
     public class FileMenu : MenuButtonExtended
     {
         private readonly string[] FILE_FILTERS = new string[] { "*.vstdb ; VST Database" };
-        private readonly PropertiesDialog propertiesDialog = new();
 
         public override void _Ready()
         {
@@ -19,13 +18,6 @@ namespace PluginManager.Editor.ToolMenus
             AddSeparator();
             AddItem(nameof(ShowOutputButtonPressed));
             AddItem(nameof(ShowPropertiesButtonPressed));
-
-            CallDeferred(nameof(GenerateWindows));
-        }
-
-        private void GenerateWindows()
-        {
-            WindowContainer.Instance.AddChild(propertiesDialog);
         }
 
         [PopupItemAttribute("New")]
@@ -67,7 +59,10 @@ namespace PluginManager.Editor.ToolMenus
         [PopupItemAttribute("File Properties")]
         public void ShowPropertiesButtonPressed()
         {
+            PropertiesDialog propertiesDialog = new();
+            WindowContainer.Instance.AddChild(propertiesDialog);
             propertiesDialog.Popup();
+            Utils.MakePopupFreeable(propertiesDialog);
         }
 
         private void OnOpenFileDialogFileSelected(string path)

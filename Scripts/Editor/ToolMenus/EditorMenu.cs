@@ -1,5 +1,4 @@
 using Godot;
-using PluginManager.PluginTree;
 using PluginManager.Editor.Containers;
 
 namespace PluginManager.Editor.ToolMenus
@@ -9,11 +8,11 @@ namespace PluginManager.Editor.ToolMenus
         public override void _Ready()
         {
             base._Ready();
-            AddItem(nameof(SettingsButtonPressed));
+            AddItem(nameof(ExportersButtonPressed));
         }
 
-        [PopupItemAttribute("Settings")]
-        public void SettingsButtonPressed()
+        [PopupItemAttribute("Edit Exporters")]
+        public void ExportersButtonPressed()
         {
         }
     }
