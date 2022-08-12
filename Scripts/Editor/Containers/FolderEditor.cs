@@ -37,8 +37,7 @@ namespace PluginManager.Editor.Containers
         private readonly NodePath PropertiesPath;
         private TreeExtended Tree;
         private VBoxContainer PropertiesContainer;
-        private TreeEntity Clipboard;
-        private TreeEntity ClipboardOriginal;
+        private List<TreeEntity> Clipboard;
         private bool _isCut = false;
 
         public override void _Ready()
@@ -140,6 +139,14 @@ namespace PluginManager.Editor.Containers
             return (Tree.GetSelected()?.GetMetadata(0) as TreeItemContainer)?.Modifier;
         }
 
+        private List<TreeEntity> GetSelectedEntities()
+        {
+            return Tree.GroupedSelectedMetadatas
+                .OfType<TreeItemContainer>()
+                .Select(x => x.Modifier)
+                .ToList();
+        }
+
         private void OnEditorInsFocusedFolderChanged(TreeFolder newFocusedFolder)
         {
             EditorServer.Instance.ClearProperties();
@@ -182,39 +189,33 @@ namespace PluginManager.Editor.Containers
         {
             if ((landingMetadata as TreeItemContainer)?.Modifier is not TreeEntity landingEntity)
                 return;
-            GD.Print(landingEntity.GetComponent<Name>().NameString);
+            List<TreeEntity> heldEntities = heldMetadatas
+                .OfType<TreeItemContainer>()
+                .Select(x => x.Modifier)
+                .ToList();
             switch (dropSection)
             {
                 case 0:
                     if (landingEntity is TreeFolder landingFolder)
                     {
-                        foreach (TreeItemContainer heldMetadata in heldMetadatas.Cast<TreeItemContainer>())
-                        {
-                            if (heldMetadata?.Modifier is TreeEntity heldEntity)
-                                landingFolder.AddChild(heldEntity);
-                        }
+                        heldEntities
+                            .ForEach(x => landingFolder.AddChild(x));
                         UpdateTree();
                     }
                     break;
                 case -1:
                     if (landingEntity.Parent is not null)
                     {
-                        foreach (TreeItemContainer heldMetadata in heldMetadatas.Cast<TreeItemContainer>())
-                        {
-                            if (heldMetadata?.Modifier is TreeEntity heldEntity)
-                                landingEntity.Parent.AddChildBefore(heldEntity, landingEntity);
-                        }
+                        heldEntities
+                            .ForEach(x => landingEntity.Parent.AddChildBefore(x, landingEntity));
                         UpdateTree();
                     }
                     break;
                 case 1:
                     if (landingEntity.Parent is not null)
                     {
-                        foreach (TreeItemContainer heldMetadata in heldMetadatas.Cast<TreeItemContainer>())
-                        {
-                            if (heldMetadata?.Modifier is TreeEntity heldEntity)
-                                landingEntity.Parent.AddChildAfter(heldEntity, landingEntity);
-                        }
+                        heldEntities
+                            .ForEach(x => landingEntity.Parent.AddChildAfter(x, landingEntity));
                         UpdateTree();
                     }
                     break;
@@ -257,62 +258,60 @@ namespace PluginManager.Editor.Containers
 
         private void OnDeleteButtonPressed()
         {
-            foreach (Godot.Object container in Tree.GroupedSelectedMetadatas)
+            IEnumerable<TreeEntity> treeItems = Tree.GroupedSelectedMetadatas
+                .OfType<TreeItemContainer>()
+                .Select(x => x.Modifier)
+                .Where(x => x != EditorServer.Instance.FocusedFolder);
+
+            foreach (TreeEntity treeItem in treeItems)
             {
-                if ((container as TreeItemContainer)?.Modifier is TreeEntity treeEntity)
-                {
-                    if (treeEntity != EditorServer.Instance.FocusedFolder)
-                    {
-                        treeEntity.Unparent();
-                        UpdateTree();
-                        EditorServer.Instance.ClearProperties();
-                        EditorServer.Instance.SelectedTreeEntity = null;
-                    }
-                }
+                treeItem.Unparent();
             }
+
+            UpdateTree();
+            EditorServer.Instance.ClearProperties();
+            EditorServer.Instance.SelectedTreeEntity = null;
         }
 
         private void OnCutButtonPressed()
         {
             _isCut = true;
-            if (GetSelectedEntity() is TreeEntity treeEntity)
-            {
-                Clipboard = treeEntity.Clone();
-                ClipboardOriginal = treeEntity;
-            }
+            Clipboard = GetSelectedEntities();
         }
 
         private void OnCopyRefButtonPressed()
         {
-            if (GetSelectedEntity() is TreeEntity treeEntity && treeEntity.GetComponent<Identifier>().Value != "Reference")
-            {
-                _isCut = false;
-                TreeEntity folderRef = TreeEntityFactory.CreateReference();
-                folderRef.GetComponent<ReferenceData>().TreeEntityRef = treeEntity;
-                folderRef.GetComponent<ReferenceData>().CopyFromRef();
-                Clipboard = folderRef;
-            }
+            _isCut = false;
+            Clipboard = GetSelectedEntities()
+                .Where(x => x.GetComponent<Identifier>().Value is not "Reference" or "Separator")
+                .Select(x =>
+                {
+                    TreeEntity folderRef = TreeEntityFactory.CreateReference();
+                    ReferenceData refData = folderRef.GetComponent<ReferenceData>();
+                    refData.TreeEntityRef = x;
+                    refData.CopyFromRef();
+                    return folderRef;
+                })
+                .ToList();
         }
 
         private void OnCopyButtonPressed()
         {
             _isCut = false;
-            if (GetSelectedEntity() is TreeEntity treeEntity)
-            {
-                Clipboard = treeEntity.Clone();
-            }
+            Clipboard = GetSelectedEntities();
         }
 
         private void OnPasteButtonPressed()
         {
-            if (Clipboard is not null)
+            if (EditorServer.Instance.FocusedFolder is null || Clipboard.Count == 0)
+                return;
+            Clipboard.ForEach(x => AddOnSelected(x.Clone()));
+            if (_isCut)
             {
-                if (AddOnSelected(Clipboard) && _isCut)
-                {
-                    ClipboardOriginal?.Unparent();
-                    UpdateTree();
-                }
+                Clipboard.ForEach(x => x.Unparent());
+                Clipboard.Clear();
             }
+            UpdateTree();
         }
     }
 }
