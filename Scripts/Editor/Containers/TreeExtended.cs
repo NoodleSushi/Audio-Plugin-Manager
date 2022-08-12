@@ -18,7 +18,7 @@ namespace PluginManager.Editor.Containers
         private TreeItem _heldItem;
         private TreeItem _selectedItem;
         private TreeItem _highestSelectedItem;
-        private IEnumerable<TreeItem> GroupedSelectedItems
+        private List<TreeItem> GroupedSelectedItems
         {
             get
             {
@@ -32,7 +32,7 @@ namespace PluginManager.Editor.Containers
                 return selected;
             }
         }
-        public IEnumerable<Godot.Object> GroupedSelectedMetadatas
+        public List<Godot.Object> GroupedSelectedMetadatas
         {
             get => GroupedSelectedItems.Select(treeItem => treeItem.GetMetadata(0) as Godot.Object).ToList();
         }
@@ -99,7 +99,7 @@ namespace PluginManager.Editor.Containers
                         break;
                     TreeItem pointedParent = (dropSection == 0) ? pointedItem : pointedItem.GetParent();
                     bool isSafe = true;
-                    IEnumerable<TreeItem> selected = GroupedSelectedItems;
+                    List<TreeItem> selected = GroupedSelectedItems;
                     foreach (TreeItem treeItem in selected)
                     {
                         if (treeItem == GetRoot() || treeItem == pointedItem || TraverseTest(pointedItem, trav => trav == treeItem))

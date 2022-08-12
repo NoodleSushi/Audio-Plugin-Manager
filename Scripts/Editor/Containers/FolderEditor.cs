@@ -174,12 +174,12 @@ namespace PluginManager.Editor.Containers
             }
         }
 
-        private void OnTreeExtendedItemsDroppedDeferred(IEnumerable<Godot.Object> heldMetadatas, Godot.Object landingMetadata, int dropSection)
+        private void OnTreeExtendedItemsDroppedDeferred(List<Godot.Object> heldMetadatas, Godot.Object landingMetadata, int dropSection)
         {
             CallDeferred(nameof(OnTreeExtendedItemsDropped), heldMetadatas, landingMetadata, dropSection);
         }
 
-        private void OnTreeExtendedItemsDropped(IEnumerable<Godot.Object> heldMetadatas, Godot.Object landingMetadata, int dropSection)
+        private void OnTreeExtendedItemsDropped(List<Godot.Object> heldMetadatas, Godot.Object landingMetadata, int dropSection)
         {
             if ((landingMetadata as TreeItemContainer)?.Modifier is not TreeEntity landingEntity)
                 return;
