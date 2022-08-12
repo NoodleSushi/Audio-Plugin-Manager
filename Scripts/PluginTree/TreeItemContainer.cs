@@ -1,8 +1,8 @@
-﻿using Godot;
+using Godot;
 
 namespace PluginManager.PluginTree
 {
-    public class TreeItemContainer : Godot.Object
+    public class TreeItemContainer : Resource
     {
         private readonly TreeItem _treeItem;
         public TreeItem TreeItem => _treeItem;

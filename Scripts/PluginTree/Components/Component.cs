@@ -1,16 +1,16 @@
-﻿using Godot;
+using Godot;
 using PluginManager.Editor;
 using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree.Components
 {
-    public abstract class Component : Godot.Object
+    public abstract class Component : Resource
     {
         public TreeEntity TreeEntity;
         public bool Visible = true;
         public bool ShallModifyTreeItem = true;
 
-        public virtual string GetName() => "Component";
+        public new virtual string GetName() => "Component";
 
         public virtual void ModifyTreeItem(TreeItem treeItem) { }
 

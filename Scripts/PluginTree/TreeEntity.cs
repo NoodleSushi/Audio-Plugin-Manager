@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree
 {
-    public class TreeEntity : Godot.Object
+    public class TreeEntity : Resource
     {
         [Signal]
         public delegate void ContentChanged();

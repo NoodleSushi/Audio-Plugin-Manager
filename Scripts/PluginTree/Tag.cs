@@ -1,10 +1,10 @@
-﻿using Godot;
+using Godot;
 using PluginManager.Editor;
 using Newtonsoft.Json.Linq;
 
 namespace PluginManager.PluginTree
 {
-    public class Tag : Godot.Object
+    public class Tag : Resource
     {
         [Signal]
         public delegate void NameChanged(string newName);
