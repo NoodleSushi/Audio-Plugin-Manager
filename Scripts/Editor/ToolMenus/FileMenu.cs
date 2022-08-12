@@ -16,6 +16,8 @@ namespace PluginManager.Editor.ToolMenus
             AddSeparator();
             AddItem(nameof(SaveButtonPressed));
             AddSeparator();
+            AddItem(nameof(ExportButtonPressed));
+            AddSeparator();
             AddItem(nameof(ShowOutputButtonPressed));
             AddItem(nameof(ShowPropertiesButtonPressed));
         }
@@ -48,6 +50,12 @@ namespace PluginManager.Editor.ToolMenus
                 FILE_FILTERS,
                 "Save VST Database"
             );
+        }
+
+        [PopupItemAttribute("Export")]
+        public void ExportButtonPressed()
+        {
+
         }
 
         [PopupItemAttribute("Output")]
