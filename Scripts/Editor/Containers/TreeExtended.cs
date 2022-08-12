@@ -10,7 +10,7 @@ namespace PluginManager.Editor.Containers
         [Signal]
         public delegate void ItemDropped(Godot.Object heldMetadata, Godot.Object landingMetadata, int dropSection);
         [Signal]
-        public delegate void ItemsDropped(IEnumerable<Godot.Object> heldMetadatas, Godot.Object landingMetadata, int dropSection);
+        public delegate void ItemsDropped(List<Godot.Object> heldMetadatas, Godot.Object landingMetadata, int dropSection);
 
         [Export(PropertyHint.Flags, "On Item,In Between")]
         public int ActiveDropFlags = (int)DropModeFlagsEnum.Inbetween;
@@ -34,7 +34,10 @@ namespace PluginManager.Editor.Containers
         }
         public List<Godot.Object> GroupedSelectedMetadatas
         {
-            get => GroupedSelectedItems.Select(treeItem => treeItem.GetMetadata(0) as Godot.Object).ToList();
+            get => GroupedSelectedItems.
+                Select(treeItem => treeItem.GetMetadata(0)).
+                OfType<Godot.Object>().
+                ToList();
         }
 
         public override void _Ready()
@@ -88,8 +91,8 @@ namespace PluginManager.Editor.Containers
                     if (!TraverseTest(pointedItem, trav => trav == _heldItem))
                     {
                         EmitSignal(nameof(ItemDropped),
-                                _heldItem.GetMetadata(0) as Godot.Object,
-                                pointedItem.GetMetadata(0) as Godot.Object,
+                                _heldItem.GetMetadata(0),
+                                pointedItem.GetMetadata(0),
                                 dropSection
                         );
                     }
@@ -110,8 +113,8 @@ namespace PluginManager.Editor.Containers
                     }
                     if (isSafe)
                         EmitSignal(nameof(ItemsDropped),
-                                selected.Select(treeItem => treeItem.GetMetadata(0) as Godot.Object).ToList(),
-                                pointedItem.GetMetadata(0) as Godot.Object,
+                                selected,
+                                pointedItem.GetMetadata(0),
                                 dropSection
                         );
                     break;

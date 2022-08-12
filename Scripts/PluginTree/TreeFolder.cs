@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Godot;
@@ -72,10 +72,7 @@ namespace PluginManager.PluginTree
             if (_children.Count > 0)
             {
                 JArray childrenArray = new();
-                foreach (TreeEntity child in _children)
-                {
-                    childrenArray.Add(TEL.GetID(child));
-                }
+                _children.ForEach(x => childrenArray.Add(TEL.GetID(x)));
                 jobj.Add("children", childrenArray);
             }
             if (Collapsed)
@@ -109,10 +106,7 @@ namespace PluginManager.PluginTree
                 newTreeFolder = newTreeEntity as TreeFolder;
             newTreeFolder = base.Clone(newTreeFolder) as TreeFolder;
             newTreeFolder.Collapsed = this.Collapsed;
-            foreach (TreeEntity child in Children)
-            {
-                newTreeFolder.AddChild(child.Clone());
-            }
+            _children.ForEach(x => newTreeFolder.AddChild(x.Clone()));
             return newTreeFolder;
         }
     }

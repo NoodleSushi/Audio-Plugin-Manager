@@ -151,9 +151,8 @@ namespace PluginManager.Editor.Containers
         {
             TreeEntity heldEntity = (heldMetadata as TreeItemContainer)?.Modifier;
             TreeEntity landingEntity = (landingMetadata as TreeItemContainer)?.Modifier;
-            if (heldEntity is null || landingEntity is null)
+            if ((heldEntity ?? landingEntity) is null)
                 return;
-            GD.Print(heldEntity.GetComponent<Name>().NameString, landingEntity.GetComponent<Name>().NameString, dropSection);
             switch (dropSection)
             {
                 case 0:

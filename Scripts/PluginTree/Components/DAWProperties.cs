@@ -1,5 +1,6 @@
-﻿using Godot;
+using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using PluginManager.Editor;
 using Newtonsoft.Json.Linq;
 using GDArray = Godot.Collections.Array;
@@ -88,14 +89,8 @@ namespace PluginManager.PluginTree.Components
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Serialize(jobj, TEL);
-            foreach (string str in DAWQueries)
-            {
-                if (str.Length > 0)
-                {
-                    jobj.Add("DAWqueries", new JArray(DAWQueries));
-                    break;
-                }
-            }
+            if (DAWQueries.FirstOrDefault(x => x.Length > 0) is not null)
+                jobj.Add("DAWqueries", new JArray(DAWQueries));
             if (Flags > 0)
                 jobj.Add("DAWflags", Flags);
         }

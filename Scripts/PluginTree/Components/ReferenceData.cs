@@ -25,18 +25,16 @@ namespace PluginManager.PluginTree.Components
 
         public override void ModifyTreeItem(TreeItem treeItem)
         {
+            Name name = TreeEntity.GetComponent<Name>();
+            FolderComp folderComp = TreeEntity.GetComponent<FolderComp>();
             if (_TreeEntityRef is TreeFolder)
-                TreeEntity.Icon =
-                    (TreeEntity.GetComponent<FolderComp>().Collapsed) ? Resources.ICON_BOX_OPEN : Resources.ICON_BOX_CLOSE;
+                TreeEntity.Icon = folderComp.Collapsed ? Resources.ICON_BOX_OPEN : Resources.ICON_BOX_CLOSE;
             else
                 TreeEntity.Icon = Resources.ICON_NODE;
             treeItem.SetIconModulate(0, new Color("cb5b5b"));
             TreeEntity.Label = "[" + _TreeEntityRef.GetComponent<Name>().NameString + "]";
-            // TreeEntity.GetComponent<Name>().ShallModifyTreeItem = (!TreeEntity.GetComponent<FolderComp>().Collapsed && IsModified);
-            TreeEntity.GetComponent<Name>().ShallModifyTreeItem = (
-                !(TreeEntity.GetComponent<FolderComp>().Collapsed || !TreeEntity.GetComponent<Name>().Active)
-            );
-            TreeEntity.GetComponent<FolderComp>().ShallModifyTreeItem = false;
+            name.ShallModifyTreeItem = !(folderComp.Collapsed || !name.Active);
+            folderComp.ShallModifyTreeItem = false;
         }
 
         public string GetEntityRefPath()

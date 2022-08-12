@@ -28,10 +28,9 @@ namespace PluginManager.PluginTree
 
         public virtual void ModifyTreeItem(TreeItem treeItem)
         {
-            foreach (Component component in _components)
+            foreach (Component component in _components.Where(x => x.ShallModifyTreeItem))
             {
-                if (component.ShallModifyTreeItem)
-                    component.ModifyTreeItem(treeItem);
+                component.ModifyTreeItem(treeItem);
             }
             treeItem.SetIcon(0, Icon);
             treeItem.SetText(0, Label);
@@ -46,16 +45,13 @@ namespace PluginManager.PluginTree
         {
             EditorServer.Instance.ClearProperties();
             bool isFirst = false;
-            foreach (Component component in _components)
+            foreach (Component component in _components.Where(x => x.Visible))
             {
-                if (component.Visible)
-                {
-                    if (!isFirst)
-                        isFirst = true;
-                    else
-                        EditorServer.Instance.AddProperty(new HSeparator());
-                    component.GenerateProperties();
-                }
+                if (!isFirst)
+                    isFirst = true;
+                else
+                    EditorServer.Instance.AddProperty(new HSeparator());
+                component.GenerateProperties();
             }
             _isGeneratingProperties = false;
         }
@@ -116,19 +112,13 @@ namespace PluginManager.PluginTree
         public virtual JObject Serialize(TreeEntityLookup TEL)
         {
             JObject jobj = new();
-            foreach (Component comp in _components)
-            {
-                comp.Serialize(jobj, TEL);
-            }
+            _components.ForEach(x => x.Serialize(jobj, TEL));
             return jobj;
         }
 
         public virtual void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            foreach (Component comp in _components)
-            {
-                comp.Deserialize(jobj, TEL);
-            }
+            _components.ForEach(x => x.Deserialize(jobj, TEL));
         }
 
         public virtual TreeEntity Clone(TreeEntity newTreeEntity = null)
@@ -137,10 +127,7 @@ namespace PluginManager.PluginTree
                 newTreeEntity = new();
             newTreeEntity.Label = this.Label;
             newTreeEntity.Icon = this.Icon;
-            foreach (Component comp in this.Components)
-            {
-                newTreeEntity.AddComponent(comp.Clone());
-            }
+            _components.ForEach(x => newTreeEntity.AddComponent(x.Clone()));
             return newTreeEntity;
         }
     }

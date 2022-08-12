@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 using PluginManager.Editor;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -59,15 +59,7 @@ namespace PluginManager.PluginTree.Components
 
         public override void ModifyTreeItem(TreeItem treeItem)
         {
-            TreeEntity.Dimmed = (_TagList.Count > 0);
-            foreach (Tag tag in _TagList)
-            {
-                if (tag.Visible)
-                {
-                    TreeEntity.Dimmed = false;
-                    break;
-                }
-            }
+            TreeEntity.Dimmed = (_TagList.Count > 0) || (_TagList.FirstOrDefault(x => x.Visible) is not null);
         }
 
         public override string GetName() => "Tag Collection";

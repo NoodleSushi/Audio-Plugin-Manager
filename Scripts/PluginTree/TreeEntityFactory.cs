@@ -27,25 +27,9 @@ namespace PluginManager.PluginTree
         public static TreeEntity CreateTreeEntityByIdentifier(string identifier)
         {
             _identif2method ??= typeof(TreeEntityFactory)
-                    .GetMethods()
-                    .Where<MethodInfo>(m => m.GetCustomAttributes(typeof(IdentifierAttribute), false).Length > 0)
-                    .ToDictionary(m => m.GetCustomAttribute<IdentifierAttribute>().Value, m => m.Name);
-            // if (_identif2method == null)
-            // {
-            // Dictionary<string, string> identif2method = new();
-            // var methods = typeof(TreeEntityFactory)
-            //     .GetMethods()
-            //     .Where(
-            //         m => m.GetCustomAttributes(typeof(IdentifierAttribute), false).Length > 0
-            //     )
-            //     .ToArray();
-
-            // foreach (MethodInfo method in methods)
-            // {
-            //     IdentifierAttribute identif = method.GetCustomAttribute<IdentifierAttribute>();
-            //     identif2method[identif.Value] = method.Name;
-            // }
-            // }
+                .GetMethods()
+                .Where(m => m.GetCustomAttributes(typeof(IdentifierAttribute), false).Length > 0)
+                .ToDictionary(m => m.GetCustomAttribute<IdentifierAttribute>().Value, m => m.Name);
             return (TreeEntity)typeof(TreeEntityFactory).GetMethod(_identif2method[identifier]).Invoke(null, null);
         }
 

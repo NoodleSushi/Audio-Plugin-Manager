@@ -1,10 +1,10 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using PluginManager.Editor.Containers;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
-using System;
 
 namespace PluginManager.Editor.ToolMenus
 {
@@ -115,12 +115,13 @@ namespace PluginManager.Editor.ToolMenus
 
         private void OnConfirmed()
         {
-            string[] plugins = Array.ConvertAll(NameListEditor.Text.Split(','), str => str.Trim());
+            string[] plugins = NameListEditor.Text.Split(',')
+                .Select(x => x.Trim())
+                .Where(x => x.Length > 0)
+                .ToArray();
             List<TreeEntity> treeEntities = new();
             foreach (string plugin in plugins)
             {
-                if (plugin.Length == 0)
-                    continue;
                 var x = new Dictionary<string, object> {
                     {"name", plugin}
                 };
