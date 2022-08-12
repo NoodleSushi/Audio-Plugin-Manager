@@ -19,6 +19,10 @@ config/icon="res://icon.png"
 ConfigServer="*res://Scripts/Editor/ConfigServer.cs"
 PluginServer="*res://Scripts/PluginTree/PluginServer.cs"
 
+[debug]
+
+gdscript/warnings/return_value_discarded=false
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true

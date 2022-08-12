@@ -1,4 +1,6 @@
 using Godot;
+using GDDictionary = Godot.Collections.Dictionary;
+using GDArray = Godot.Collections.Array;
 
 namespace PluginManager.Editor
 {
@@ -6,10 +8,12 @@ namespace PluginManager.Editor
     {
         public const string SECTION = "main";
         public const string SAVE_PATH = "user://settings.cfg";
+        public const string EXPORTERS_PATH = "user://exporters.json";
         private static ConfigServer _instance;
         public static ConfigServer Instance => _instance;
         private readonly ConfigFile configFile = new();
         private string lastSave = "";
+        public GDArray Exporters = new();
 
 
         public override void _EnterTree()
@@ -39,11 +43,23 @@ namespace PluginManager.Editor
             {
                 lastSave = (configFile.GetValue(SECTION, "last_save", "") as string) ?? OS.GetSystemDir(OS.SystemDir.Desktop);
             }
+            File exportersFile = new();
+            if (exportersFile.FileExists(EXPORTERS_PATH))
+            {
+                exportersFile.Open(EXPORTERS_PATH, File.ModeFlags.Read);
+                var result = JSON.Parse(exportersFile.GetAsText());
+                exportersFile.Close();
+                if (result.Error == Error.Ok && result.Result is GDArray arrayResult)
+                    Exporters = arrayResult;
+            }
         }
 
         private void Save()
         {
-
+            File exportersFile = new();
+            exportersFile.Open(EXPORTERS_PATH, File.ModeFlags.Write);
+            exportersFile.StoreString(JSON.Print(Exporters));
+            exportersFile.Close();
         }
     }
 }

@@ -1,4 +1,5 @@
 using Godot;
+using GDArray = Godot.Collections.Array;
 using PluginManager.Editor.Containers;
 
 namespace PluginManager.Editor.ToolMenus
@@ -14,6 +15,17 @@ namespace PluginManager.Editor.ToolMenus
         [PopupItemAttribute("Edit Exporters")]
         public void ExportersButtonPressed()
         {
+            var ExporterEditor = Resources.ExporterEditorScene.Instance<AcceptDialog>();
+            WindowContainer.Instance.AddChild(ExporterEditor);
+            ExporterEditor.PopupCenteredRatio();
+            ExporterEditor.Call("serialize", ConfigServer.Instance.Exporters);
+            ExporterEditor.Connect("confirmed", this, nameof(onExporterEditorFreed), new GDArray(ExporterEditor));
+            Utils.MakePopupFreeable(ExporterEditor);
+        }
+
+        private void onExporterEditorFreed(Popup popup)
+        {
+            ConfigServer.Instance.Exporters = (GDArray)popup.Call("deserialize");
         }
     }
 }
