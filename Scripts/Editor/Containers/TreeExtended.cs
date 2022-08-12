@@ -113,7 +113,7 @@ namespace PluginManager.Editor.Containers
                     }
                     if (isSafe)
                         EmitSignal(nameof(ItemsDropped),
-                                selected,
+                                selected.Select(x => x.GetMetadata(0)).ToList(),
                                 pointedItem.GetMetadata(0),
                                 dropSection
                         );
