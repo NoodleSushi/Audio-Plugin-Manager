@@ -30,7 +30,7 @@ namespace PluginManager.Editor.Containers
             if (outputText is not null)
                 outputDialogText.Text = outputText;
             outputDialog.PopupCenteredRatio();
-            Utils.MakePopupFreeable(outputDialog);
+            outputDialog.MakeFreeable();
         }
 
         public void DisplayError(string errorText)
@@ -40,7 +40,7 @@ namespace PluginManager.Editor.Containers
             errorDialog.WindowTitle = "Error!";
             errorDialog.DialogText = errorText;
             errorDialog.PopupCenteredMinsize();
-            Utils.MakePopupFreeable(errorDialog);
+            errorDialog.MakeFreeable();
         }
 
         public void DisplayFileDialog(
@@ -69,7 +69,7 @@ namespace PluginManager.Editor.Containers
             fileDialog.Filters = filters ?? new string[] { "" };
             fileDialog.WindowTitle = windowTitle;
             fileDialog.PopupCenteredRatio();
-            Utils.MakePopupFreeable(fileDialog);
+            fileDialog.MakeFreeable();
         }
     }
 }

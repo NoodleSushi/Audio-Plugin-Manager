@@ -21,7 +21,7 @@ namespace PluginManager.Editor.ToolMenus
         {
             PluginMakerDialog pluginMakerDialog = new();
             WindowContainer.Instance.AddChild(pluginMakerDialog);
-            Utils.MakePopupFreeable(pluginMakerDialog);
+            pluginMakerDialog.MakeFreeable();
             pluginMakerDialog.Popup();
         }
 

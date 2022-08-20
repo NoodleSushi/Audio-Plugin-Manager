@@ -78,7 +78,7 @@ namespace PluginManager.Editor.ToolMenus
             var Exporter = Resources.ExporterScene.Instance<AcceptDialog>();
             WindowContainer.Instance.AddChild(Exporter);
             Exporter.PopupCenteredRatio();
-            Utils.MakePopupFreeable(Exporter);
+            Exporter.MakeFreeable();
         }
 
         [PopupItemAttribute("Output")]
@@ -93,7 +93,7 @@ namespace PluginManager.Editor.ToolMenus
             PropertiesDialog propertiesDialog = new();
             WindowContainer.Instance.AddChild(propertiesDialog);
             propertiesDialog.Popup();
-            Utils.MakePopupFreeable(propertiesDialog);
+            propertiesDialog.MakeFreeable();
         }
 
         private void OnOpenFileDialogFileSelected(string path)

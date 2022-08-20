@@ -17,7 +17,7 @@ namespace PluginManager.Editor.ToolMenus
             var ExporterEditor = Resources.ExporterEditorScene.Instance<AcceptDialog>();
             WindowContainer.Instance.AddChild(ExporterEditor);
             ExporterEditor.PopupCenteredRatio();
-            Utils.MakePopupFreeable(ExporterEditor);
+            ExporterEditor.MakeFreeable();
         }
     }
 }
