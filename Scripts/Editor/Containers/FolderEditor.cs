@@ -52,6 +52,16 @@ namespace PluginManager.Editor.Containers
                 this,
                 nameof(UpdateTree)
             );
+            EditorServer.Instance.Connect(
+                nameof(EditorServer.SelectedEntitiesAsked),
+                this,
+                nameof(OnEditorInsSelectedEntitiesAsked)
+            );
+            EditorServer.Instance.Connect(
+                nameof(EditorServer.GroupedSelectedEntitiesAsked),
+                this,
+                nameof(OnEditorInsGroupedSelectedEntitiesAsked)
+            );
             Tree = GetNode<TreeExtended>(TreePath);
             Tree.SelectMode = Godot.Tree.SelectModeEnum.Multi;
             Tree.CreateItem();
@@ -59,6 +69,7 @@ namespace PluginManager.Editor.Containers
             Tree.Connect(nameof(TreeExtended.ItemsDropped), this, nameof(OnTreeExtendedItemsDroppedDeferred));
             Tree.Connect("item_selected", this, nameof(OnTreeItemSelected));
             Tree.Connect("item_collapsed", this, nameof(OnTreeItemCollapsed));
+            Tree.Connect("gui_input", this, nameof(OnTreeGuiInput));
             PropertiesContainer = GetNode<VBoxContainer>(PropertiesPath);
             EditorServer.Instance.SetPropertiesContainer(PropertiesContainer);
             GetNode<BaseButton>(FolderButtonPath).Connect("pressed", this, nameof(OnFolderButtonPressed));
@@ -121,17 +132,38 @@ namespace PluginManager.Editor.Containers
             else if (selectedEntity is TreeFolder treeFolder)
             {
                 treeFolder.AddChild(treeEntity);
-                UpdateTree();
-                treeFolder.SelectTreeItem();
-                return true;
             }
             else
             {
-                selectedEntity.Parent.AddChildAfter(treeEntity, selectedEntity);
+                selectedEntity.AddChildAfter(treeEntity);
+            }
+            UpdateTree();
+            selectedEntity.SelectTreeItem();
+            return true;
+        }
+
+        public bool AddOnSelected(IEnumerable<TreeEntity> treeEntities)
+        {
+            if (EditorServer.Instance.FocusedFolder == null)
+                return false;
+            TreeEntity selectedEntity = GetSelectedEntity();
+            if (selectedEntity == null)
+            {
+                EditorServer.Instance.FocusedFolder.AddChildren(treeEntities);
                 UpdateTree();
-                selectedEntity.SelectTreeItem();
                 return true;
             }
+            else if (selectedEntity is TreeFolder treeFolder)
+            {
+                treeFolder.AddChildren(treeEntities);
+            }
+            else
+            {
+                selectedEntity.AddChildrenAfter(treeEntities);
+            }
+            UpdateTree();
+            treeEntities.LastOrDefault()?.SelectTreeItem();
+            return true;
         }
 
         private TreeEntity GetSelectedEntity()
@@ -139,7 +171,7 @@ namespace PluginManager.Editor.Containers
             return (Tree.GetSelected()?.GetMetadata(0) as TreeItemContainer)?.Modifier;
         }
 
-        private List<TreeEntity> GetSelectedEntities()
+        private List<TreeEntity> GetGroupedSelectedEntities()
         {
             return Tree.GroupedSelectedMetadatas
                 .OfType<TreeItemContainer>()
@@ -152,6 +184,19 @@ namespace PluginManager.Editor.Containers
             EditorServer.Instance.ClearProperties();
             EditorServer.Instance.SelectedTreeEntity = newFocusedFolder;
             UpdateTree();
+        }
+
+        private void OnEditorInsSelectedEntitiesAsked()
+        {
+            EditorServer.Instance.SelectedTreeEntities = Tree.SelectedMetadatas
+                .OfType<TreeItemContainer>()
+                .Select(x => x.Modifier)
+                .ToList();
+        }
+
+        private void OnEditorInsGroupedSelectedEntitiesAsked()
+        {
+            EditorServer.Instance.GroupedSelectedTreeEntities = GetGroupedSelectedEntities();
         }
 
         private void OnTreeExtendedItemDropped(Godot.Object heldMetadata, Godot.Object landingMetadata, int dropSection)
@@ -170,11 +215,11 @@ namespace PluginManager.Editor.Containers
                     }
                     break;
                 case -1:
-                    landingEntity.Parent?.AddChildBefore(heldEntity, landingEntity);
+                    landingEntity.AddChildBefore(heldEntity);
                     UpdateTree();
                     break;
                 case 1:
-                    landingEntity.Parent?.AddChildAfter(heldEntity, landingEntity);
+                    landingEntity.AddChildAfter(heldEntity);
                     UpdateTree();
                     break;
             }
@@ -198,24 +243,21 @@ namespace PluginManager.Editor.Containers
                 case 0:
                     if (landingEntity is TreeFolder landingFolder)
                     {
-                        heldEntities
-                            .ForEach(x => landingFolder.AddChild(x));
+                        landingFolder.AddChildren(heldEntities);
                         UpdateTree();
                     }
                     break;
                 case -1:
                     if (landingEntity.Parent is not null)
                     {
-                        heldEntities
-                            .ForEach(x => landingEntity.Parent.AddChildBefore(x, landingEntity));
+                        landingEntity.AddChildrenBefore(heldEntities);
                         UpdateTree();
                     }
                     break;
                 case 1:
                     if (landingEntity.Parent is not null)
                     {
-                        heldEntities
-                            .ForEach(x => landingEntity.Parent.AddChildAfter(x, landingEntity));
+                        landingEntity.AddChildrenAfter(heldEntities);
                         UpdateTree();
                     }
                     break;
@@ -241,14 +283,43 @@ namespace PluginManager.Editor.Containers
             }
         }
 
+        private void OnTreeGuiInput(InputEvent @event)
+        {
+            if (!Tree.HasFocus())
+                return;
+            if (@event is InputEventKey eventKey && eventKey.Pressed)
+            {
+                if (eventKey.Control)
+                {
+                    if (eventKey.Scancode == (int)KeyList.C)
+                    {
+                        if (eventKey.Shift)
+                            OnCopyRefButtonPressed();
+                        else
+                            OnCopyButtonPressed();
+                    }
+                    else if (eventKey.Scancode == (int)KeyList.V)
+                    {
+                        OnPasteButtonPressed();
+                    }
+                    else if (eventKey.Scancode == (int)KeyList.X)
+                    {
+                        OnCutButtonPressed();
+                    }
+                }
+                if (eventKey.Scancode == (int)KeyList.Delete)
+                    OnDeleteButtonPressed();
+            }
+        }
+
         private void OnFolderButtonPressed()
         {
-            AddOnSelected(TreeEntityFactory.CreateFolder());
+            AddOnSelected(TreeEntityFactory.GetTreeEntityPreset("Folder"));
         }
 
         private void OnPluginButtonPressed()
         {
-            AddOnSelected(TreeEntityFactory.CreatePlugin());
+            AddOnSelected(TreeEntityFactory.GetTreeEntityPreset("Plugin"));
         }
 
         private void OnSeparatorButtonPressed()
@@ -276,17 +347,17 @@ namespace PluginManager.Editor.Containers
         private void OnCutButtonPressed()
         {
             _isCut = true;
-            Clipboard = GetSelectedEntities();
+            Clipboard = GetGroupedSelectedEntities();
         }
 
         private void OnCopyRefButtonPressed()
         {
             _isCut = false;
-            Clipboard = GetSelectedEntities()
+            Clipboard = GetGroupedSelectedEntities()
                 .Where(x => x.GetComponent<Identifier>().Value is not "Reference" or "Separator")
                 .Select(x =>
                 {
-                    TreeEntity folderRef = TreeEntityFactory.CreateReference();
+                    TreeEntity folderRef = TreeEntityFactory.GetTreeEntityPreset("Reference");
                     ReferenceData refData = folderRef.GetComponent<ReferenceData>();
                     refData.TreeEntityRef = x;
                     refData.CopyFromRef();
@@ -298,14 +369,14 @@ namespace PluginManager.Editor.Containers
         private void OnCopyButtonPressed()
         {
             _isCut = false;
-            Clipboard = GetSelectedEntities();
+            Clipboard = GetGroupedSelectedEntities();
         }
 
         private void OnPasteButtonPressed()
         {
             if (EditorServer.Instance.FocusedFolder is null || Clipboard.Count == 0)
                 return;
-            Clipboard.ForEach(x => AddOnSelected(x.Clone()));
+            AddOnSelected(Clipboard.Select(x => x.Clone()));
             if (_isCut)
             {
                 Clipboard.ForEach(x => x.Unparent());

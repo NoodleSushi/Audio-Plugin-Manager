@@ -18,5 +18,6 @@ namespace PluginManager.Editor
         public static readonly Texture ICON_VISIBLE_OFF = GD.Load<Texture>("res://Icons/VisibleOff.svg");
 
         public static readonly PackedScene ExporterEditorScene = GD.Load<PackedScene>("res://Editors/ExporterEditor/ExporterEditor.tscn");
+        public static readonly PackedScene ExporterScene = GD.Load<PackedScene>("res://Editors/ExporterEditor/Exporter.tscn");
     }
 }

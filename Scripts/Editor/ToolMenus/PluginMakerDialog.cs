@@ -143,16 +143,12 @@ namespace PluginManager.Editor.ToolMenus
 
             if (EditorServer.Instance.SelectedTreeEntity is TreeFolder treeFolder)
             {
-                treeEntities.ForEach(te => treeFolder.AddChild(te));
+                treeFolder.AddChildren(treeEntities);
             }
             else
             {
-                TreeEntity latest = EditorServer.Instance.SelectedTreeEntity;
-                foreach (TreeEntity treeEntity in treeEntities)
-                {
-                    latest.Parent.AddChildAfter(treeEntity, latest);
-                    latest = treeEntity;
-                }
+                TreeEntity treeEntity = EditorServer.Instance.SelectedTreeEntity;
+                treeEntity.AddChildrenAfter(treeEntities);
             }
             EditorServer.Instance.RefreshFolderEditor();
         }
@@ -162,6 +158,7 @@ namespace PluginManager.Editor.ToolMenus
             if (EditorServer.Instance.SelectedTreeEntity is null)
             {
                 WindowContainer.Instance.DisplayError("Tree entity is not selected.");
+                QueueFree();
                 return;
             }
             NameListEditor.Clear();

@@ -32,6 +32,8 @@ func _ready() -> void:
 	$"%DeleteArgButton".connect("pressed", self, "_on_DeleteArgButton_pressed")
 	$"%UpButton".connect("pressed", self, "_on_MoveButton_pressed", [-1])
 	$"%DownButton".connect("pressed", self, "_on_MoveButton_pressed", [1])
+	connect("confirmed", self, "_on_confirmed")
+	serialize(ConfigServer.Exporters)
 	update_exporter_options()
 	update_editor()
 
@@ -136,6 +138,9 @@ func _on_MoveButton_pressed(offset: int) -> void:
 	export_args[idx] = export_args[idx+offset]
 	export_args[idx+offset] = temp
 	update_tree()
+
+func _on_confirmed() -> void:
+	ConfigServer.Exporters = deserialize()
 
 func deserialize() -> Array:
 	var out: Array = []

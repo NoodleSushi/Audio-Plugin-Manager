@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using PluginManager.PluginTree.Components;
@@ -26,12 +27,12 @@ namespace PluginManager.PluginTree
         private List<Tag> _tagList = new();
         private List<string> _dawList = new();
 
-        public IList<TreeFolder> FolderList => _folderList.AsReadOnly();
-        public GDArray GDFolderList => new(_folderList);
-        public IList<Tag> TagList => _tagList.AsReadOnly();
-        public IList<string> DAWList => _dawList.AsReadOnly();
-        public GDArray GDDAWList => new(_dawList);
+        public ReadOnlyCollection<TreeFolder> FolderList => _folderList.AsReadOnly();
+        public ReadOnlyCollection<Tag> TagList => _tagList.AsReadOnly();
+        public ReadOnlyCollection<string> DAWList => _dawList.AsReadOnly();
         public int DAWCount => _dawList.Count;
+        public GDArray GDFolderList => new(_folderList);
+        public GDArray GDDAWList => new(_dawList);
 
         // Singleton Instance
         public static PluginServer Instance
@@ -41,15 +42,16 @@ namespace PluginManager.PluginTree
                 if (_instance == null)
                 {
                     _instance = new();
+                    _instance.Clear();
                 }
                 return _instance;
             }
         }
 
         // Instantiate
-        public PluginServer()
+        public override void _EnterTree()
         {
-            DAWListDefault();
+            Clear();
         }
 
         public void DAWListDefault()

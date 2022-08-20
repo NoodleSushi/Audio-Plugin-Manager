@@ -23,6 +23,7 @@ namespace PluginManager.PluginTree
         }
 
         private static Dictionary<string, string> _identif2method;
+        private static readonly Dictionary<string, TreeEntity> _identif2preset = new();
 
         public static TreeEntity CreateTreeEntityByIdentifier(string identifier)
         {
@@ -32,6 +33,29 @@ namespace PluginManager.PluginTree
                 .ToDictionary(m => m.GetCustomAttribute<IdentifierAttribute>().Value, m => m.Name);
             return (TreeEntity)typeof(TreeEntityFactory).GetMethod(_identif2method[identifier]).Invoke(null, null);
         }
+
+        public static TreeEntity GetTreeEntityPreset(string identifier)
+        {
+            if (_identif2preset.ContainsKey(identifier))
+            {
+                return _identif2preset[identifier].Clone();
+            }
+            else
+            {
+                return CreateTreeEntityByIdentifier(identifier);
+            }
+        }
+
+        public static void SetTreeEntityPreset(string identifier, TreeEntity treeEntity)
+        {
+            _identif2preset[identifier] = treeEntity.Clone();
+        }
+
+        public static void RemoveTreeEntityPreset(string identifier)
+        {
+            _identif2preset.Remove(identifier);
+        }
+
 
         [IdentifierAttribute("Folder")]
         public static TreeFolder CreateFolder()

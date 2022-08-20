@@ -54,7 +54,27 @@ namespace PluginManager.PluginTree
                     EditorServer.Instance.AddProperty(new HSeparator());
                 component.GenerateProperties();
             }
+            Button makeDefaultButton = new() { Text = "Make Default" };
+            Button resetDefaultButton = new() { Text = "Reset Default" };
+            makeDefaultButton.Connect("pressed", this, nameof(OnDefaultButtonPressed));
+            resetDefaultButton.Connect("pressed", this, nameof(OnResetButtonPressed));
+            EditorServer.Instance.AddProperty(makeDefaultButton);
+            EditorServer.Instance.AddProperty(resetDefaultButton);
             _isGeneratingProperties = false;
+        }
+
+        private void OnDefaultButtonPressed()
+        {
+            if (GetComponent<Identifier>() is not Identifier identifier)
+                return;
+            TreeEntityFactory.SetTreeEntityPreset(identifier.Value, this);
+        }
+
+        private void OnResetButtonPressed()
+        {
+            if (GetComponent<Identifier>() is not Identifier identifier)
+                return;
+            TreeEntityFactory.RemoveTreeEntityPreset(identifier.Value);
         }
 
         public void DeferredGenerateProperties()
@@ -109,6 +129,26 @@ namespace PluginManager.PluginTree
         public void SelectTreeItem() => EmitSignal(nameof(SelectEmitted));
 
         public void Unparent() => Parent?.RemoveChild(this);
+
+        public void AddChildAfter(TreeEntity child)
+        {
+            Parent?.AddChildAfter(child, this);
+        }
+
+        public void AddChildrenAfter(IEnumerable<TreeEntity> children)
+        {
+            Parent?.AddChildrenAfter(children, this);
+        }
+
+        public void AddChildBefore(TreeEntity child)
+        {
+            Parent?.AddChildBefore(child, this);
+        }
+
+        public void AddChildrenBefore(IEnumerable<TreeEntity> children)
+        {
+            Parent?.AddChildrenBefore(children, this);
+        }
 
         public virtual JObject Serialize(TreeEntityLookup TEL)
         {

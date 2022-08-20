@@ -59,7 +59,7 @@ namespace PluginManager.PluginTree.Components
 
         public override void ModifyTreeItem(TreeItem treeItem)
         {
-            TreeEntity.Dimmed = (_TagList.Count > 0) || (_TagList.FirstOrDefault(x => x.Visible) is not null);
+            TreeEntity.Dimmed = (_TagList.Count > 0) || _TagList.Any(x => x.Visible);
         }
 
         public override string GetName() => "Tag Collection";
@@ -121,10 +121,9 @@ namespace PluginManager.PluginTree.Components
             base.Deserialize(jobj, TEL);
             if (jobj.ContainsKey("tags"))
             {
-                JArray jTagList = (JArray)jobj["tags"];
-                foreach (int jTagID in jTagList.Select(v => (int)v))
+                foreach (Tag tag in jobj["tags"].Select(v => PluginServer.Instance.TagList[(int)v]))
                 {
-                    _TagList.Add(PluginServer.Instance.TagList[jTagID]);
+                    _TagList.Add(tag);
                 }
             }
         }

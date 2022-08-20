@@ -7,7 +7,6 @@
 [ext_resource path="res://Icons/Remove.svg" type="Texture" id=5]
 
 [node name="ExporterEditor" type="AcceptDialog"]
-visible = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = -246.0

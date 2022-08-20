@@ -15,6 +15,7 @@ namespace PluginManager.Editor.ToolMenus
             AddItem(nameof(OpenButtonPressed));
             AddSeparator();
             AddItem(nameof(SaveButtonPressed));
+            AddItem(nameof(SaveAsButtonPressed));
             AddSeparator();
             AddItem(nameof(ExportButtonPressed));
             AddSeparator();
@@ -22,13 +23,13 @@ namespace PluginManager.Editor.ToolMenus
             AddItem(nameof(ShowPropertiesButtonPressed));
         }
 
-        [PopupItemAttribute("New")]
+        [PopupItemAttribute("New (Ctrl+N)")]
         public void NewButtonPressed()
         {
             PluginServer.Instance.Clear();
         }
 
-        [PopupItemAttribute("Open")]
+        [PopupItemAttribute("Open (Ctrl+O)")]
         public void OpenButtonPressed()
         {
             WindowContainer.Instance.DisplayFileDialog(
@@ -40,8 +41,27 @@ namespace PluginManager.Editor.ToolMenus
             );
         }
 
-        [PopupItemAttribute("Save")]
+        [PopupItemAttribute("Save (Ctrl+S)")]
         public void SaveButtonPressed()
+        {
+            if (EditorServer.Instance.IsProjectPathValid())
+            {
+                OnSaveFileDialogFileSelected(null);
+            }
+            else
+            {
+                WindowContainer.Instance.DisplayFileDialog(
+                    FileDialog.ModeEnum.SaveFile,
+                    this,
+                    nameof(OnSaveFileDialogFileSelected),
+                    FILE_FILTERS,
+                    "Save VST Database"
+                );
+            }
+        }
+
+        [PopupItemAttribute("Save As... (Ctrl+Shift+S)")]
+        public void SaveAsButtonPressed()
         {
             WindowContainer.Instance.DisplayFileDialog(
                 FileDialog.ModeEnum.SaveFile,
@@ -55,7 +75,10 @@ namespace PluginManager.Editor.ToolMenus
         [PopupItemAttribute("Export")]
         public void ExportButtonPressed()
         {
-
+            var Exporter = Resources.ExporterScene.Instance<AcceptDialog>();
+            WindowContainer.Instance.AddChild(Exporter);
+            Exporter.PopupCenteredRatio();
+            Utils.MakePopupFreeable(Exporter);
         }
 
         [PopupItemAttribute("Output")]
@@ -75,48 +98,49 @@ namespace PluginManager.Editor.ToolMenus
 
         private void OnOpenFileDialogFileSelected(string path)
         {
-            bool success = true;
             string outputDialog = "An error occurred while reading the VSTDB file.\n\n";
-            using (File file = new())
-            {
-                file.Open(path, File.ModeFlags.Read);
-                try
-                {
-                    success = PluginServer.Instance.Deserialize(file.GetAsText());
-                }
-                catch (System.Exception error)
-                {
-                    success = false;
-                    outputDialog += error.ToString();
-                    PluginServer.Instance.Clear();
-                }
-                file.Close();
-            }
+            bool success = EditorServer.Instance.LoadProject(path, out var errMsg);
             if (!success)
             {
+                outputDialog += errMsg;
                 WindowContainer.Instance.DisplayOutput(outputDialog);
             }
         }
 
         private void OnSaveFileDialogFileSelected(string path)
         {
-            bool success = true;
             string outputDialog = "An error occurred while saving as a VSTDB file.\n\n";
-            File file = new();
-            file.Open(path, File.ModeFlags.Write);
-            try
-            {
-                file.StoreString(PluginServer.Instance.Serialize());
-            }
-            catch (System.Exception error)
-            {
-                success = false;
-                outputDialog += error.ToString();
-            }
-            file.Close();
+            bool success = EditorServer.Instance.SaveProject(path, out var errMsg);
             if (!success)
             {
+                outputDialog += errMsg;
                 WindowContainer.Instance.DisplayOutput(outputDialog);
+            }
+        }
+
+        public override void _Input(InputEvent @event)
+        {
+            if (@event is InputEventKey eventKey && eventKey.Control && eventKey.Pressed)
+            {
+                if (eventKey.Scancode == (int)KeyList.S)
+                {
+                    if (eventKey.Shift)
+                    {
+                        SaveAsButtonPressed();
+                    }
+                    else
+                    {
+                        SaveButtonPressed();
+                    }
+                }
+                else if (eventKey.Scancode == (int)KeyList.N)
+                {
+                    NewButtonPressed();
+                }
+                else if (eventKey.Scancode == (int)KeyList.O)
+                {
+                    OpenButtonPressed();
+                }
             }
         }
     }

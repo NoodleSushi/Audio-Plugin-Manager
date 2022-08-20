@@ -18,6 +18,18 @@ namespace PluginManager.Editor.Containers
         private TreeItem _heldItem;
         private TreeItem _selectedItem;
         private TreeItem _highestSelectedItem;
+        private List<TreeItem> SelectedItems
+        {
+            get
+            {
+                List<TreeItem> selected = new();
+                for (TreeItem treeItem = _highestSelectedItem; treeItem != null; treeItem = GetNextSelected(treeItem))
+                {
+                    selected.Add(treeItem);
+                }
+                return selected;
+            }
+        }
         private List<TreeItem> GroupedSelectedItems
         {
             get
@@ -31,6 +43,13 @@ namespace PluginManager.Editor.Containers
                 }
                 return selected;
             }
+        }
+        public List<Godot.Object> SelectedMetadatas
+        {
+            get => SelectedItems.
+                Select(treeItem => treeItem.GetMetadata(0)).
+                OfType<Godot.Object>().
+                ToList();
         }
         public List<Godot.Object> GroupedSelectedMetadatas
         {

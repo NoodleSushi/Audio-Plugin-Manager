@@ -1,9 +1,10 @@
 using Godot;
+using System.Collections.Generic;
 using PluginManager.PluginTree;
 
 namespace PluginManager.Editor
 {
-    public class EditorServer : Godot.Object
+    public class EditorServer : Node
     {
         [Signal]
         public delegate void FocusedFolderChanged(TreeFolder newFocusedFolder);
@@ -11,12 +12,15 @@ namespace PluginManager.Editor
         public delegate void TreeEntityChanged();
         [Signal]
         public delegate void CallFolderEditorRefresh();
+        [Signal]
+        public delegate void SelectedEntitiesAsked();
+        [Signal]
+        public delegate void GroupedSelectedEntitiesAsked();
 
         private static EditorServer _instance;
         private TreeFolder _focusedFolder;
         private VBoxContainer _propertiesContainer;
         private TreeEntity _selectedTreeEntity = null;
-
         public TreeFolder FocusedFolder => _focusedFolder;
         public TreeEntity SelectedTreeEntity
         {
@@ -27,16 +31,37 @@ namespace PluginManager.Editor
                 EmitSignal(nameof(TreeEntityChanged));
             }
         }
-        public static EditorServer Instance
+        private List<TreeEntity> _selectedTreeEntities = null;
+        public List<TreeEntity> SelectedTreeEntities
         {
             get
             {
-                if (_instance == null)
-                {
-                    _instance = new();
-                }
-                return _instance;
+                EmitSignal(nameof(SelectedEntitiesAsked));
+                return _selectedTreeEntities;
             }
+            set => _selectedTreeEntities = value;
+        }
+        private List<TreeEntity> _groupedSelectedTreeEntities = null;
+        public List<TreeEntity> GroupedSelectedTreeEntities
+        {
+            get
+            {
+                EmitSignal(nameof(GroupedSelectedEntitiesAsked));
+                return _groupedSelectedTreeEntities;
+            }
+            set => _groupedSelectedTreeEntities = value;
+        }
+        private string _projectPath = "";
+        public static EditorServer Instance => _instance;
+
+        public override void _EnterTree()
+        {
+            _instance = this;
+        }
+
+        public override void _Ready()
+        {
+            PluginServer.Instance.Connect("Cleared", this, nameof(OnPluginServerCleared));
         }
 
 
@@ -87,6 +112,68 @@ namespace PluginManager.Editor
         {
             ClearProperties();
             UnfocusFolder();
+        }
+
+        // IO
+
+        public bool IsProjectPathValid()
+        {
+            return _projectPath != "" && new Directory().FileExists(_projectPath);
+        }
+
+        public bool LoadProject(string path, out string message)
+        {
+            bool success = true;
+            message = "";
+            using (File file = new())
+            {
+                file.Open(path, File.ModeFlags.Read);
+                try
+                {
+                    success = PluginServer.Instance.Deserialize(file.GetAsText());
+                }
+                catch (System.Exception error)
+                {
+                    success = false;
+                    message = error.ToString();
+                    PluginServer.Instance.Clear();
+                }
+                file.Close();
+            }
+            if (success)
+                _projectPath = path;
+            return success;
+        }
+
+        public bool SaveProject(string path, out string message)
+        {
+            path ??= _projectPath;
+            bool success = true;
+            message = "";
+            using (File file = new())
+            {
+                file.Open(path, File.ModeFlags.Write);
+                try
+                {
+                    file.StoreString(PluginServer.Instance.Serialize());
+                }
+                catch (System.Exception error)
+                {
+                    success = false;
+                    message = error.ToString();
+                }
+                file.Close();
+            }
+            if (success)
+                _projectPath = path;
+            return success;
+        }
+
+        // Signals
+
+        public void OnPluginServerCleared()
+        {
+            _projectPath = "";
         }
     }
 }

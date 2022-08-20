@@ -8,7 +8,7 @@
 [ext_resource path="res://Scripts/Editor/ToolMenus/ToolsMenu.cs" type="Script" id=6]
 [ext_resource path="res://Scripts/Editor/ToolMenus/EditorMenu.cs" type="Script" id=7]
 
-[node name="MainEditor" type="Control"]
+[node name="MainEditor" type="Panel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 

@@ -89,7 +89,7 @@ namespace PluginManager.PluginTree.Components
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Serialize(jobj, TEL);
-            if (DAWQueries.FirstOrDefault(x => x.Length > 0) is not null)
+            if (DAWQueries.Any(x => x.Length > 0))
                 jobj.Add("DAWqueries", new JArray(DAWQueries));
             if (Flags > 0)
                 jobj.Add("DAWflags", Flags);
@@ -117,6 +117,7 @@ namespace PluginManager.PluginTree.Components
             DAWProperties newComp = newComponent as DAWProperties ?? new DAWProperties();
             base.Clone(newComp);
             newComp.Flags = this.Flags;
+            newComp.DAWQueries = new(this.DAWQueries);
             return newComp;
         }
     }
