@@ -97,7 +97,7 @@ namespace PluginManager.Editor.Containers
             Tree.HideRoot = false;
             TreeItem rootTreeItem = Tree.CreateItem();
             TreeFolder rootTreeFolder = EditorServer.Instance.FocusedFolder;
-            new TreeItemContainer(rootTreeItem, rootTreeFolder);
+            rootTreeItem.ContainTreeEntity(rootTreeFolder);
 
             Stack<(TreeItem treeItem, TreeFolder treeFolder, int idx)> trav = new();
             trav.Push((rootTreeItem, rootTreeFolder, 0));
@@ -108,7 +108,7 @@ namespace PluginManager.Editor.Containers
                     continue;
                 TreeItem newTreeItem = Tree.CreateItem(branch.treeItem);
                 TreeEntity childEntity = branch.treeFolder.Children[branch.idx++];
-                new TreeItemContainer(newTreeItem, childEntity);
+                newTreeItem.ContainTreeEntity(childEntity);
                 trav.Push(branch);
                 if (childEntity is TreeFolder newFolder)
                 {
@@ -168,7 +168,7 @@ namespace PluginManager.Editor.Containers
 
         private TreeEntity GetSelectedEntity()
         {
-            return (Tree.GetSelected()?.GetMetadata(0) as TreeItemContainer)?.Modifier;
+            return Tree.GetSelected()?.GetTreeEntity();
         }
 
         private List<TreeEntity> GetGroupedSelectedEntities()
@@ -277,7 +277,7 @@ namespace PluginManager.Editor.Containers
 
         private void OnTreeItemCollapsed(TreeItem item)
         {
-            if ((item.GetMetadata(0) as TreeItemContainer)?.Modifier is TreeFolder treeFolder)
+            if (item.GetTreeEntity() is TreeFolder treeFolder)
             {
                 treeFolder.Collapsed = item.Collapsed;
             }

@@ -30,4 +30,17 @@ namespace PluginManager.PluginTree
             _treeItem.Select(0);
         }
     }
+
+    public static class TreeItemContainerExtensions
+    {
+        public static void ContainTreeEntity(this TreeItem treeItem, TreeEntity modifier)
+        {
+            new TreeItemContainer(treeItem, modifier);
+        }
+
+        public static TreeEntity GetTreeEntity(this TreeItem treeItem)
+        {
+            return (treeItem.GetMetadata(0) as TreeItemContainer)?.Modifier;
+        }
+    }
 }
