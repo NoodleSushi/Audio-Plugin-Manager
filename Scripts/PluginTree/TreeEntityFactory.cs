@@ -91,10 +91,10 @@ namespace PluginManager.PluginTree
             Identifier identifier = treeEntity.AddComponent<Identifier>();
             identifier.Value = "Reference";
             treeEntity.AddComponent<ReferenceData>();
-            treeEntity.AddComponent<Name>();
+            treeEntity.AddComponent<Name>().Active = false;
             treeEntity.AddComponent<FolderComp>();
-            treeEntity.AddComponent<DAWProperties>();
-            treeEntity.AddComponent<TagCollection>();
+            treeEntity.AddComponent<DAWProperties>().Active = false;
+            treeEntity.AddComponent<TagCollection>().Active = false;
             return treeEntity;
         }
 
