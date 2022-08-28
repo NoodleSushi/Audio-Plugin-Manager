@@ -53,8 +53,7 @@ namespace PluginManager.PluginTree.Components
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
-            if (jobj.ContainsKey("collapsed"))
-                Collapsed = (bool)jobj["collapsed"];
+            Collapsed = jobj.GetValue("collapsed", false);
         }
     }
 }

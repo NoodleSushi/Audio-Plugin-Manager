@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using PluginManager.Editor;
@@ -98,18 +99,16 @@ namespace PluginManager.PluginTree.Components
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
-            if (jobj.ContainsKey("DAWqueries"))
+            if (jobj.GetValue<JArray>("DAWqueries") is JArray dawQueries)
             {
-                JArray dawQueries = (JArray)jobj["DAWqueries"];
-                for (int i = 0; i < PluginServer.Instance.DAWCount && i < dawQueries.Count; i++)
+                int dawCount = Math.Min(PluginServer.Instance.DAWCount, dawQueries.Count);
+                for (int i = 0; i < dawCount; i++)
                 {
-                    DAWQueries[i] = (string)dawQueries[i];
+                    if (dawQueries[i].ToObject<string>() is string dawQuery)
+                        DAWQueries[i] = dawQuery;
                 }
             }
-            if (jobj.ContainsKey("DAWflags"))
-            {
-                Flags = (int)jobj["DAWflags"];
-            }
+            Flags = jobj.GetValue<int>("DAWflags", 0);
         }
 
         public override Component Clone(Component newComponent = null)

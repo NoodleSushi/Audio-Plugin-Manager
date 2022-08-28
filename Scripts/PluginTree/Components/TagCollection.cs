@@ -119,11 +119,12 @@ namespace PluginManager.PluginTree.Components
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
-            if (jobj.ContainsKey("tags"))
+            if (jobj.GetValue<JArray>("tags") is JArray tags)
             {
-                foreach (Tag tag in jobj["tags"].Select(v => PluginServer.Instance.TagList[(int)v]))
+                foreach (var tag in tags)
                 {
-                    _TagList.Add(tag);
+                    if (tag.ToObject<int>() is int idx)
+                        _TagList.Add(PluginServer.Instance.TagList[idx]);
                 }
             }
         }

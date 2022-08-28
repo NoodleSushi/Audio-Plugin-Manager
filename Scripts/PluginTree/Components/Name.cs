@@ -47,7 +47,7 @@ namespace PluginManager.PluginTree.Components
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            NameString = (string)jobj["name"];
+            NameString = jobj.GetValue("name", "");
         }
 
         public override Component Clone(Component newComponent = null)

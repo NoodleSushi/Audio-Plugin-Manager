@@ -111,7 +111,8 @@ namespace PluginManager.PluginTree.Components
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            _TreeEntityRef = TEL.GetTreeEntity((int)jobj["ref"]);
+            if (jobj.GetValue("ref", -1) is int refIdx && refIdx != -1)
+                _TreeEntityRef = TEL.GetTreeEntity(refIdx);
         }
     }
 }

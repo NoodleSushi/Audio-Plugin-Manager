@@ -112,15 +112,11 @@ namespace PluginManager.PluginTree
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
-            if (jobj.ContainsKey("children"))
+            if (jobj.GetValue<JArray>("children") is JArray children)
             {
-                SetChildren(jobj["children"].Select(v => TEL.GetTreeEntity((int)v)));
+                SetChildren(children.Select(v => TEL.GetTreeEntity((int)v)));
             }
-
-            if (jobj.ContainsKey("editor_collapsed"))
-            {
-                Collapsed = (bool)jobj["editor_collapsed"];
-            }
+            Collapsed = jobj.GetValue("editor_collapsed", false);
         }
 
         public override TreeEntity Clone(TreeEntity newTreeEntity = null)

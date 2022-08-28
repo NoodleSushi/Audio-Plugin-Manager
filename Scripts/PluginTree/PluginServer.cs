@@ -80,7 +80,7 @@ namespace PluginManager.PluginTree
             // serialize tags
             if (_tagList.Count > 0)
             {
-                o.Add("tags", new JArray(_tagList.Select<Tag, JObject>(tag => tag.Serialize())));
+                o.Add("tags", new JArray(_tagList.Select(tag => tag.Serialize())));
             }
 
             // serialize daws
@@ -90,7 +90,7 @@ namespace PluginManager.PluginTree
             }
 
             // serialize folders
-            o.Add("folders", new JArray(_folderList.Select<TreeFolder, int>(treeFolder => TEL.GetID(treeFolder))));
+            o.Add("folders", new JArray(_folderList.Select(treeFolder => TEL.GetID(treeFolder))));
 
             // dump all other stuff
             o.Add("entities", TEL.DumpSerializedJArray());
@@ -103,26 +103,22 @@ namespace PluginManager.PluginTree
             Clear(false);
             JObject o;
             o = JObject.Parse(json);
-            if (o.ContainsKey("tags") && o["tags"] is JArray)
+            if (o.GetValue<JArray>("tags") is JArray tags)
             {
-                foreach (JObject tagObj in o["tags"].Cast<JObject>())
+                foreach (JObject tagObj in tags.Cast<JObject>())
                 {
-                    Tag newTag = new();
-                    if (tagObj.Property("name") is JProperty nameProperty)
+                    Tag newTag = new()
                     {
-                        newTag.Name = (string)nameProperty.Value;
-                    }
-                    if (tagObj.Property("visible") is JProperty visibleProperty)
-                    {
-                        newTag.Visible = (bool)visibleProperty.Value;
-                    }
+                        Name = tagObj.GetValue("name", ""),
+                        Visible = tagObj.GetValue("visible", true)
+                    };
                     _tagList.Add(newTag);
                 }
             }
 
-            if (o.ContainsKey("daws") && o["daws"] is JArray)
+            if (o.GetValue<JArray>("daws") is JArray daws)
             {
-                foreach (string daw in o["daws"].Select(v => (string)v))
+                foreach (string daw in daws.Select(v => (string)v))
                 {
                     _dawList.Add(daw);
                 }
@@ -133,9 +129,8 @@ namespace PluginManager.PluginTree
             }
 
             TreeEntityLookup TEL = new();
-            if (o.TryGetValue("entities", out JToken entitiesToken))
+            if (o.GetValue<JArray>("entities") is JArray entities)
             {
-                JArray entities = entitiesToken.Value<JArray>();
                 foreach (JObject entity in entities.Cast<JObject>())
                 {
                     TEL.AddJObject(entity);
@@ -147,9 +142,8 @@ namespace PluginManager.PluginTree
                 return false;
             }
 
-            if (o.TryGetValue("folders", out JToken foldersToken))
+            if (o.GetValue<JArray>("folders") is JArray folders)
             {
-                JArray folders = foldersToken.Value<JArray>();
                 _folderList.AddRange(folders.Select(id => TEL.GetTreeEntity((int)id) as TreeFolder));
             }
             else

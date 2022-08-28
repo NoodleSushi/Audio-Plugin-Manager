@@ -58,7 +58,7 @@ namespace PluginManager.PluginTree.Components
             if (jobj.ContainsKey(GetSerializeKey()))
             {
                 isOptional = true;
-                Active = (bool)jobj[GetSerializeKey()];
+                Active = jobj.GetValue(GetSerializeKey(), false);
             }
         }
     }
