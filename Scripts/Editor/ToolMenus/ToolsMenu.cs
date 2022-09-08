@@ -14,6 +14,7 @@ namespace PluginManager.Editor.ToolMenus
             AddItem(nameof(OnCopyFromReferencePressed));
             AddItem(nameof(OnSortFolderPressed));
             AddItem(nameof(OnRevSortFolderPressed));
+            AddItem(nameof(OnDeactivateOptionalsPressed));
         }
 
         [PopupItemAttribute("Generate Plugins")]
@@ -59,6 +60,27 @@ namespace PluginManager.Editor.ToolMenus
                 treeFolder.Children.OrderByDescending(x => x.GetComponent<Name>()?.NameString ?? "")
             );
             EditorServer.Instance.RefreshFolderEditor();
+        }
+
+        [PopupItemAttribute("Selected Deactivate Optionals")]
+        public void OnDeactivateOptionalsPressed()
+        {
+            var comps = EditorServer.Instance.SelectedTreeEntities
+                .SelectMany(x => x.Components)
+                .OfType<BaseOptional>()
+                .Where(x => x.isOptional);
+            foreach (var comp in comps)
+                comp.Active = false;
+        }
+
+        public void OnModifyOptionalsActivePressed()
+        {
+            var optionalTypes = typeof(BaseOptional).Assembly.GetTypes()
+                .Where(x => x.IsSubclassOf(typeof(BaseOptional)));
+            foreach (var type in optionalTypes)
+            {
+                // type.Name;
+            }
         }
     }
 }
