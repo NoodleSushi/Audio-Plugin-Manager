@@ -11,7 +11,7 @@ namespace PluginManager.PluginTree.Components
     public class DAWProperties : BaseOptional
     {
         public List<string> Queries = new();
-        public int Flags = 0;
+        public int VisibleFlags = 0;
         public bool IsQueryVisible = true;
 
         public DAWProperties()
@@ -20,16 +20,16 @@ namespace PluginManager.PluginTree.Components
             {
                 Queries.Add("");
             }
-            Flags = (0b1 << PluginServer.Instance.DAWCount) - 1;
+            VisibleFlags = (0b1 << PluginServer.Instance.DAWCount) - 1;
         }
 
-        public void ToggleFlag(bool press_state, int idx)
+        public void ToggleVisibleFlag(bool press_state, int idx)
         {
-            Flags = (Flags & ~(0b1 << idx)) | ((press_state ? 0b1 : 0b0) << idx);
-            Flags &= (0b1 << PluginServer.Instance.DAWCount) - 1;
+            VisibleFlags = (VisibleFlags & ~(0b1 << idx)) | ((press_state ? 0b1 : 0b0) << idx);
+            VisibleFlags &= (0b1 << PluginServer.Instance.DAWCount) - 1;
         }
 
-        public bool GetFlagState(int idx) => ((Flags >> idx) & 1) > 0;
+        public bool GetVisibleFlagState(int idx) => ((VisibleFlags >> idx) & 1) > 0;
 
         public void ChangeQuery(string newQuery, int idx)
         {
@@ -52,12 +52,12 @@ namespace PluginManager.PluginTree.Components
 
                 using (CheckBox check = new())
                 {
-                    check.Text = "Exposed";
-                    check.Pressed = GetFlagState(idx);
+                    check.Text = "Visible";
+                    check.Pressed = GetVisibleFlagState(idx);
                     check.Connect(
                         "toggled",
                         this,
-                        nameof(ToggleFlag),
+                        nameof(ToggleVisibleFlag),
                         new GDArray(idx)
                     );
                     EditorServer.Instance.AddProperty(check);
@@ -88,8 +88,8 @@ namespace PluginManager.PluginTree.Components
         {
             if (Queries.Any(x => x.Length > 0))
                 jobj.Add("queries", new JArray(Queries));
-            if (Flags > 0)
-                jobj.Add("flags", Flags);
+            if (VisibleFlags > 0)
+                jobj.Add("flags", VisibleFlags);
         }
 
         protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
@@ -103,14 +103,14 @@ namespace PluginManager.PluginTree.Components
                         Queries[i] = dawQuery;
                 }
             }
-            Flags = jobj.GetValue<int>("flags", 0);
+            VisibleFlags = jobj.GetValue<int>("flags", 0);
         }
 
         public override Component Clone(Component newComponent = null)
         {
             DAWProperties newComp = newComponent as DAWProperties ?? new DAWProperties();
             base.Clone(newComp);
-            newComp.Flags = this.Flags;
+            newComp.VisibleFlags = this.VisibleFlags;
             newComp.Queries = new(this.Queries);
             return newComp;
         }

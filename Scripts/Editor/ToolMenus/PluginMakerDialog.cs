@@ -131,7 +131,7 @@ namespace PluginManager.Editor.ToolMenus
                 for (int idx = 0; idx < PluginServer.Instance.DAWCount; idx++)
                 {
                     dawProperties.ChangeQuery(Format(DAWNameEditors[idx].Text, x), idx);
-                    dawProperties.ToggleFlag(DAWAvailableEditors[idx].Pressed, idx);
+                    dawProperties.ToggleVisibleFlag(DAWAvailableEditors[idx].Pressed, idx);
                 }
                 TagCollection tagCollection = treeEntity.GetComponent<TagCollection>();
                 foreach (int tagIdx in TagIndexes)

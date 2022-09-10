@@ -80,7 +80,7 @@ namespace PluginManager.PluginTree.Components
         {
             DAWProperties thsProperties = TreeEntity.GetComponent<DAWProperties>();
             DAWProperties refProperties = _TreeEntityRef.GetComponent<DAWProperties>();
-            thsProperties.Flags = refProperties.Flags;
+            thsProperties.VisibleFlags = refProperties.VisibleFlags;
             thsProperties.Queries = new(refProperties.Queries);
             TreeEntity.GetComponent<Name>().NameString = _TreeEntityRef.GetComponent<Name>().NameString;
         }
