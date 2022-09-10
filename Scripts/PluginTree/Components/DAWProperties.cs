@@ -87,9 +87,9 @@ namespace PluginManager.PluginTree.Components
         protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
             if (Queries.Any(x => x.Length > 0))
-                jobj.Add("DAWqueries", new JArray(Queries));
+                jobj.Add("queries", new JArray(Queries));
             if (Flags > 0)
-                jobj.Add("DAWflags", Flags);
+                jobj.Add("flags", Flags);
         }
 
         protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
