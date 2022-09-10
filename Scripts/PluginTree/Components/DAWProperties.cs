@@ -10,7 +10,7 @@ namespace PluginManager.PluginTree.Components
 {
     public class DAWProperties : BaseOptional
     {
-        public List<string> DAWQueries = new();
+        public List<string> Queries = new();
         public int Flags = 0;
         public bool IsQueryVisible = true;
 
@@ -18,7 +18,7 @@ namespace PluginManager.PluginTree.Components
         {
             for (var i = 0; i < PluginServer.Instance.DAWCount; i++)
             {
-                DAWQueries.Add("");
+                Queries.Add("");
             }
             Flags = (0b1 << PluginServer.Instance.DAWCount) - 1;
         }
@@ -33,7 +33,7 @@ namespace PluginManager.PluginTree.Components
 
         public void ChangeQuery(string newQuery, int idx)
         {
-            DAWQueries[idx] = newQuery;
+            Queries[idx] = newQuery;
         }
 
         public override string GetName() => "DAW Properties";
@@ -70,7 +70,7 @@ namespace PluginManager.PluginTree.Components
                 {
                     LineEdit line = new()
                     {
-                        Text = DAWQueries[idx]
+                        Text = Queries[idx]
                     };
                     if (TreeEntity.GetComponent<Name>() is Name nameComponent)
                     {
@@ -89,8 +89,8 @@ namespace PluginManager.PluginTree.Components
 
         protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
-            if (DAWQueries.Any(x => x.Length > 0))
-                jobj.Add("DAWqueries", new JArray(DAWQueries));
+            if (Queries.Any(x => x.Length > 0))
+                jobj.Add("DAWqueries", new JArray(Queries));
             if (Flags > 0)
                 jobj.Add("DAWflags", Flags);
         }
@@ -103,7 +103,7 @@ namespace PluginManager.PluginTree.Components
                 for (int i = 0; i < dawCount; i++)
                 {
                     if (dawQueries[i].ToObject<string>() is string dawQuery)
-                        DAWQueries[i] = dawQuery;
+                        Queries[i] = dawQuery;
                 }
             }
             Flags = jobj.GetValue<int>("flags", 0);
@@ -114,7 +114,7 @@ namespace PluginManager.PluginTree.Components
             DAWProperties newComp = newComponent as DAWProperties ?? new DAWProperties();
             base.Clone(newComp);
             newComp.Flags = this.Flags;
-            newComp.DAWQueries = new(this.DAWQueries);
+            newComp.Queries = new(this.Queries);
             return newComp;
         }
     }
