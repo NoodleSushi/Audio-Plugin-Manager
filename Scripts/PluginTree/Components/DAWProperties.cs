@@ -10,6 +10,7 @@ namespace PluginManager.PluginTree.Components
 {
     public class DAWProperties : BaseOptional
     {
+        public List<string> Names = new();
         public List<string> Queries = new();
         public int VisibleFlags = 0;
         public bool IsQueryVisible = true;
@@ -18,6 +19,7 @@ namespace PluginManager.PluginTree.Components
         {
             for (var i = 0; i < PluginServer.Instance.DAWCount; i++)
             {
+                Names.Add("");
                 Queries.Add("");
             }
             VisibleFlags = (0b1 << PluginServer.Instance.DAWCount) - 1;
@@ -30,6 +32,11 @@ namespace PluginManager.PluginTree.Components
         }
 
         public bool GetVisibleFlagState(int idx) => ((VisibleFlags >> idx) & 1) > 0;
+
+        public void ChangeName(string newName, int idx)
+        {
+            Names[idx] = newName;
+        }
 
         public void ChangeQuery(string newQuery, int idx)
         {
@@ -65,27 +72,31 @@ namespace PluginManager.PluginTree.Components
 
                 if (IsQueryVisible)
                 {
-                    LineEdit line = new()
-                    {
-                        Text = Queries[idx]
-                    };
-                    if (TreeEntity.GetComponent<Name>() is Name nameComponent)
-                    {
-                        line.PlaceholderText = nameComponent.NameString;
-                    }
-                    line.Connect(
+                    string placeholder = TreeEntity.GetComponent<Name>()?.NameString ?? "";
+                    LineEdit nameLine = new() { Text = Names[idx], PlaceholderText = placeholder };
+                    LineEdit queryLine = new() { Text = Queries[idx], PlaceholderText = placeholder };
+                    nameLine.Connect(
+                        "text_changed",
+                        this,
+                        nameof(ChangeName),
+                        new GDArray(idx)
+                    );
+                    queryLine.Connect(
                         "text_changed",
                         this,
                         nameof(ChangeQuery),
                         new GDArray(idx)
                     );
-                    EditorServer.Instance.AddProperty(line);
+                    EditorServer.Instance.AddProperty(nameLine);
+                    EditorServer.Instance.AddProperty(queryLine);
                 }
             }
         }
 
         protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
+            if (Names.Any(x => x.Length > 0))
+                jobj.Add("names", new JArray(Names));
             if (Queries.Any(x => x.Length > 0))
                 jobj.Add("queries", new JArray(Queries));
             if (VisibleFlags > 0)
@@ -103,6 +114,15 @@ namespace PluginManager.PluginTree.Components
                         Queries[i] = dawQuery;
                 }
             }
+            if (jobj.GetValue<JArray>("names") is JArray dawNames)
+            {
+                int dawCount = Math.Min(PluginServer.Instance.DAWCount, dawNames.Count);
+                for (int i = 0; i < dawCount; i++)
+                {
+                    if (dawNames[i].ToObject<string>() is string dawName)
+                        Names[i] = dawName;
+                }
+            }
             VisibleFlags = jobj.GetValue<int>("flags", 0);
         }
 
@@ -111,6 +131,7 @@ namespace PluginManager.PluginTree.Components
             DAWProperties newComp = newComponent as DAWProperties ?? new DAWProperties();
             base.Clone(newComp);
             newComp.VisibleFlags = this.VisibleFlags;
+            newComp.Names = new(this.Names);
             newComp.Queries = new(this.Queries);
             return newComp;
         }
