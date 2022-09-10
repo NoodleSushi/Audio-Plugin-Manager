@@ -97,7 +97,7 @@ namespace PluginManager.PluginTree.Components
 
         protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            if (jobj.GetValue<JArray>("DAWqueries") is JArray dawQueries)
+            if (jobj.GetValue<JArray>("queries") is JArray dawQueries)
             {
                 int dawCount = Math.Min(PluginServer.Instance.DAWCount, dawQueries.Count);
                 for (int i = 0; i < dawCount; i++)
@@ -106,7 +106,7 @@ namespace PluginManager.PluginTree.Components
                         DAWQueries[i] = dawQuery;
                 }
             }
-            Flags = jobj.GetValue<int>("DAWflags", 0);
+            Flags = jobj.GetValue<int>("flags", 0);
         }
 
         public override Component Clone(Component newComponent = null)
