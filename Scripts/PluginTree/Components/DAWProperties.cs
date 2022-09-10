@@ -40,11 +40,8 @@ namespace PluginManager.PluginTree.Components
 
         public override string SerializeIdentifier() => "daw";
 
-        public override void GenerateProperties()
+        protected override void OptionalGenerateProperties()
         {
-            base.GenerateProperties();
-            if (!Active)
-                return;
             for (int idx = 0; idx < PluginServer.Instance.DAWCount; idx++)
             {
                 using (Label label = new())

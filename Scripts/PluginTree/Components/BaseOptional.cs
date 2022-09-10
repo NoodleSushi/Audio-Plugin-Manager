@@ -11,7 +11,7 @@ namespace PluginManager.PluginTree.Components
 
         public virtual string SerializeIdentifier() => "";
 
-        public override void GenerateProperties()
+        sealed public override void GenerateProperties()
         {
             base.GenerateProperties();
             if (isOptional)
@@ -24,7 +24,11 @@ namespace PluginManager.PluginTree.Components
                 checkBox.Connect("toggled", this, nameof(OnCheckBoxToggled));
                 EditorServer.Instance.AddProperty(checkBox);
             }
+            if (Active)
+                OptionalGenerateProperties();
         }
+
+        protected abstract void OptionalGenerateProperties();
 
         private void OnCheckBoxToggled(bool pressed)
         {

@@ -20,11 +20,8 @@ namespace PluginManager.PluginTree.Components
             TreeEntity.Label = NameString;
         }
 
-        public override void GenerateProperties()
+        protected override void OptionalGenerateProperties()
         {
-            base.GenerateProperties();
-            if (!Active)
-                return;
             LineEdit lineEdit = new()
             {
                 Text = NameString

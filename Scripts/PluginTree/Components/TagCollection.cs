@@ -66,11 +66,8 @@ namespace PluginManager.PluginTree.Components
 
         public override string SerializeIdentifier() => "tag";
 
-        public override void GenerateProperties()
+        protected override void OptionalGenerateProperties()
         {
-            base.GenerateProperties();
-            if (!Active)
-                return;
             Tree tree = new()
             {
                 HideRoot = true,
