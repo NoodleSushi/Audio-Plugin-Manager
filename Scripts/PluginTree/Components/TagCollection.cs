@@ -102,9 +102,8 @@ namespace PluginManager.PluginTree.Components
             DeferredUpdateTreeItems();
         }
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Serialize(jobj, TEL);
             if (_TagList.Count > 0)
             {
                 jobj.Add(
@@ -116,9 +115,8 @@ namespace PluginManager.PluginTree.Components
             }
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Deserialize(jobj, TEL);
             if (jobj.GetValue<JArray>("tags") is JArray tags)
             {
                 foreach (var tag in tags)

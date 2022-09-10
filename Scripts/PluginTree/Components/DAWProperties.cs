@@ -87,18 +87,16 @@ namespace PluginManager.PluginTree.Components
             }
         }
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Serialize(jobj, TEL);
             if (DAWQueries.Any(x => x.Length > 0))
                 jobj.Add("DAWqueries", new JArray(DAWQueries));
             if (Flags > 0)
                 jobj.Add("DAWflags", Flags);
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Deserialize(jobj, TEL);
             if (jobj.GetValue<JArray>("DAWqueries") is JArray dawQueries)
             {
                 int dawCount = Math.Min(PluginServer.Instance.DAWCount, dawQueries.Count);

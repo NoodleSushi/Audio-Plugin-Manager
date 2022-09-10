@@ -40,12 +40,12 @@ namespace PluginManager.PluginTree.Components
             EmitSignal(nameof(NameChanged), NameString);
         }
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
             jobj.Add("name", NameString);
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
             NameString = jobj.GetValue("name", "");
         }

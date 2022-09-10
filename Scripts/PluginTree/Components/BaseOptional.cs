@@ -42,24 +42,32 @@ namespace PluginManager.PluginTree.Components
             return newComp;
         }
 
-        private string GetSerializeKey()
+        private void GetSerializeJObject(ref JObject jobj)
         {
-            return SerializeIdentifier() + "_active";
+            jobj = jobj.GetValue(SerializeIdentifier(), new JObject());
         }
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected abstract void OptionalSerialize(JObject jobj, TreeEntityLookup TEL);
+
+        protected abstract void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL);
+
+        sealed public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
+            GetSerializeJObject(ref jobj);
             if (isOptional)
-                jobj.Add(GetSerializeKey(), Active);
+                jobj.Add("active", Active);
+            OptionalSerialize(jobj, TEL);
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        sealed public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            if (jobj.ContainsKey(GetSerializeKey()))
+            GetSerializeJObject(ref jobj);
+            if (jobj.ContainsKey("active"))
             {
                 isOptional = true;
-                Active = jobj.GetValue(GetSerializeKey(), false);
+                Active = jobj.GetValue("active", false);
             }
+            OptionalDeserialize(jobj, TEL);
         }
     }
 }
