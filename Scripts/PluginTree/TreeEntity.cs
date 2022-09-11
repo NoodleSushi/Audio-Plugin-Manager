@@ -111,6 +111,13 @@ namespace PluginManager.PluginTree
             return null;
         }
 
+        public Component GetComponent(Type T)
+        {
+            if (_componentMap.TryGetValue(T, out Component comp))
+                return comp;
+            return null;
+        }
+
         public void UpdateTreeItem()
         {
             EmitSignal(nameof(ContentChanged));
