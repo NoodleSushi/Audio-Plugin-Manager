@@ -87,7 +87,15 @@ namespace PluginManager.PluginTree.Components
                         nameof(ChangeQuery),
                         new GDArray(idx)
                     );
+                    EditorServer.Instance.AddProperty(new Label()
+                    {
+                        Text = "Name:"
+                    });
                     EditorServer.Instance.AddProperty(nameLine);
+                    EditorServer.Instance.AddProperty(new Label()
+                    {
+                        Text = "Query:"
+                    });
                     EditorServer.Instance.AddProperty(queryLine);
                 }
             }
