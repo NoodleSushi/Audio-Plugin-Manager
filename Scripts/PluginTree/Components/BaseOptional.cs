@@ -59,10 +59,11 @@ namespace PluginManager.PluginTree.Components
 
         sealed public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
-            GetSerializeJObject(ref jobj);
+            JObject optJobj = new();
             if (isOptional)
-                jobj.Add("active", Active);
-            OptionalSerialize(jobj, TEL);
+                optJobj.Add("active", Active);
+            OptionalSerialize(optJobj, TEL);
+            jobj.Add(SerializeIdentifier(), optJobj);
         }
 
         sealed public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
