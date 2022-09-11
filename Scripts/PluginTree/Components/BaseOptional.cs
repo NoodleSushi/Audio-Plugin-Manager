@@ -37,6 +37,8 @@ namespace PluginManager.PluginTree.Components
             TreeEntity.DeferredUpdateTreeItem();
         }
 
+        public abstract void Copy(BaseOptional comp);
+
         public override Component Clone(Component newComponent)
         {
             if (newComponent is not BaseOptional newComp)

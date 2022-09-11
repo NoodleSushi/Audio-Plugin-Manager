@@ -126,6 +126,15 @@ namespace PluginManager.PluginTree.Components
             VisibleFlags = jobj.GetValue<int>("flags", 0);
         }
 
+        public override void Copy(BaseOptional comp)
+        {
+            if (comp is not DAWProperties ccomp)
+                return;
+            VisibleFlags = ccomp.VisibleFlags;
+            Names = new(ccomp.Names);
+            Queries = new(ccomp.Queries);
+        }
+
         public override Component Clone(Component newComponent = null)
         {
             DAWProperties newComp = newComponent as DAWProperties ?? new DAWProperties();

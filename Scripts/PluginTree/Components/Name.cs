@@ -47,6 +47,13 @@ namespace PluginManager.PluginTree.Components
             NameString = jobj.GetValue("name", "");
         }
 
+        public override void Copy(BaseOptional comp)
+        {
+            if (comp is not Name ccomp)
+                return;
+            NameString = ccomp.NameString;
+        }
+
         public override Component Clone(Component newComponent = null)
         {
             Name newComp = newComponent as Name ?? new Name();

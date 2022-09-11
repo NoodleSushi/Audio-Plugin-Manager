@@ -124,6 +124,13 @@ namespace PluginManager.PluginTree.Components
             }
         }
 
+        public override void Copy(BaseOptional comp)
+        {
+            if (comp is not TagCollection ccomp)
+                return;
+            _TagList = new(ccomp._TagList);
+        }
+
         public override Component Clone(Component newComponent = null)
         {
             TagCollection newComp = newComponent as TagCollection ?? new TagCollection();
