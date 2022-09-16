@@ -11,6 +11,8 @@ namespace PluginManager.PluginTree
 {
     public class TreeEntity : Resource
     {
+        private const int BUTTON_VISIBLE_ID = 0;
+
         [Signal]
         public delegate void ContentChanged();
 
@@ -20,6 +22,7 @@ namespace PluginManager.PluginTree
         public string Label;
         public Texture Icon;
         public bool Dimmed = false;
+        public bool Visible = true;
         private readonly List<Component> _components = new();
         private readonly Dictionary<Type, Component> _componentMap = new();
         private bool _isUpdatingTreeItem = false;
@@ -29,13 +32,18 @@ namespace PluginManager.PluginTree
 
         public virtual void ModifyTreeItem(TreeItem treeItem)
         {
+            Dimmed = false;
             foreach (Component component in _components.Where(x => x.ShallModifyTreeItem))
             {
                 component.ModifyTreeItem(treeItem);
             }
             treeItem.SetIcon(0, Icon);
             treeItem.SetText(0, Label);
-            Dimmed = (Parent is not null && Parent.Dimmed) || Dimmed;
+            Texture visibilityIcon = Visible ? Resources.ICON_VISIBLE_ON : Resources.ICON_VISIBLE_OFF;
+            if (Parent != null && treeItem.GetButtonById(0, BUTTON_VISIBLE_ID) == -1)
+                treeItem.AddButton(0, visibilityIcon, BUTTON_VISIBLE_ID);
+            treeItem.SetButton(0, treeItem.GetButtonById(0, BUTTON_VISIBLE_ID), visibilityIcon);
+            Dimmed = Dimmed || !Visible || (Parent is not null && Parent.Dimmed);
             if (Dimmed)
                 treeItem.SetCustomBgColor(0, new Color(Colors.Black, 0.25f));
             else
@@ -65,7 +73,11 @@ namespace PluginManager.PluginTree
 
         public void ButtonPressed(int column, int id)
         {
-            
+            if (id == BUTTON_VISIBLE_ID)
+                Visible = !Visible;
+            DeferredUpdateTreeItem();
+            if (this is TreeFolder treeFolder)
+                treeFolder.DeferredUpdateTreeItemChildren();
         }
 
         private void OnDefaultButtonPressed()
@@ -170,12 +182,14 @@ namespace PluginManager.PluginTree
         public virtual JObject Serialize(TreeEntityLookup TEL)
         {
             JObject jobj = new();
+            jobj["visible"] = Visible;
             _components.ForEach(x => x.Serialize(jobj, TEL));
             return jobj;
         }
 
         public virtual void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
+            Visible = jobj.GetValue("visible", true);
             _components.ForEach(x => x.Deserialize(jobj, TEL));
         }
 
@@ -185,6 +199,7 @@ namespace PluginManager.PluginTree
                 newTreeEntity = new();
             newTreeEntity.Label = this.Label;
             newTreeEntity.Icon = this.Icon;
+            newTreeEntity.Visible = this.Visible;
             _components.ForEach(x => newTreeEntity.AddComponent(x.Clone()));
             return newTreeEntity;
         }
