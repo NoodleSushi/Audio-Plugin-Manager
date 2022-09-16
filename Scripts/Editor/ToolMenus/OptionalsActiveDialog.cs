@@ -10,6 +10,13 @@ namespace PluginManager.Editor.ToolMenus
 
     public class OptionalsActiveDialog : ConfirmationDialog
     {
+        private enum ActiveOption
+        {
+            Ignore,
+            Activate,
+            Deactivate,
+        }
+
         private TypeList _typeList = null;
         private TypeList TypeList
         {
@@ -24,6 +31,7 @@ namespace PluginManager.Editor.ToolMenus
                 return _typeList;
             }
         }
+        private Dictionary<Type, ActiveOption> _typeActiveOptions = new();
 
         public override void _Ready()
         {
@@ -44,21 +52,54 @@ namespace PluginManager.Editor.ToolMenus
             vBoxContainer.SizeFlagsVertical |= (int)Control.SizeFlags.ExpandFill;
             marginContainer.AddChild(vBoxContainer);
 
-            foreach (var type in TypeList)
+
+
+            foreach (Type type in TypeList)
             {
-                Label label = new()
-                {
-                    Text = type.Name
-                };
+                _typeActiveOptions.Add(type, ActiveOption.Ignore);
+                Label label = new() { Text = type.Name };
                 vBoxContainer.AddChild(label);
 
-                OptionButton option = new();
-                option.AddItem("Ignore");
-                option.AddItem("Activate");
-                option.AddItem("Deactivate");
-                option.AddItem("Deactivate On Default");
-                vBoxContainer.AddChild(option);
+                OptionButton optionButton = new();
+                foreach (ActiveOption option in Enum.GetValues(typeof(ActiveOption)).Cast<ActiveOption>())
+                {
+                    optionButton.AddItem(option.ToString(), (int)option);
+                }
+                optionButton.Select(optionButton.GetItemIndex((int)_typeActiveOptions[type]));
+                optionButton.Connect("item_selected", this, nameof(OnOptionButtonItemSelected), new(new SignalParamWrapper(optionButton), new SignalParamWrapper(type)));
+                vBoxContainer.AddChild(optionButton);
             }
+
+            Connect("confirmed", this, nameof(OnConfirmed));
+        }
+
+        private void OnConfirmed()
+        {
+            foreach (var folderRef in EditorServer.Instance.SelectedTreeEntities.Where(x => x.HasComponent<ReferenceData>()))
+            {
+                foreach (var type in TypeList)
+                {
+                    ActiveOption activeOption = _typeActiveOptions[type];
+                    if (activeOption != ActiveOption.Ignore && folderRef.GetComponent(type) is BaseOptional Comp)
+                    {
+                        Comp.Active = activeOption == ActiveOption.Activate;
+                    }
+                }
+            }
+            EditorServer.Instance.RefreshFolderEditor();
+        }
+
+        // private void OnOptionButtonItemSelected(int index, OptionButton optionButton, Type type)
+        private void OnOptionButtonItemSelected(int index, SignalParamWrapper _optionButton, SignalParamWrapper _type)
+        {
+            OptionButton optionButton = _optionButton.GetValue<OptionButton>();
+            Type type = _type.GetValue<Type>();
+            _typeActiveOptions[type] = (ActiveOption)optionButton.GetSelectedId();
+        }
+
+        public void Popup()
+        {
+            PopupCenteredRatio();
         }
     }
 }

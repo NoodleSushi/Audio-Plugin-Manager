@@ -19,6 +19,7 @@ namespace PluginManager.Editor.ToolMenus
             AddItem(nameof(OnRemoveDuplicates));
             AddItem(nameof(OnNestedRemoveDuplicates));
             AddItem(nameof(OnDeactivateOptionalsPressed));
+            AddItem(nameof(OnModifyOptionalsActivePressed));
         }
 
         [PopupItemAttribute("Generate Plugins")]
@@ -126,14 +127,13 @@ namespace PluginManager.Editor.ToolMenus
                 comp.Active = false;
         }
 
+        [PopupItemAttribute("Modify Optionals Active")]
         public void OnModifyOptionalsActivePressed()
         {
-            var optionalTypes = typeof(BaseOptional).Assembly.GetTypes()
-                .Where(x => x.IsSubclassOf(typeof(BaseOptional)));
-            foreach (var type in optionalTypes)
-            {
-                // type.Name;
-            }
+            OptionalsActiveDialog optionalsActiveDialog = new();
+            WindowContainer.Instance.AddChild(optionalsActiveDialog);
+            optionalsActiveDialog.MakeFreeable();
+            optionalsActiveDialog.Popup();
         }
     }
 }
