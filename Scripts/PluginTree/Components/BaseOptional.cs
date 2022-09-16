@@ -47,10 +47,18 @@ namespace PluginManager.PluginTree.Components
             return SerializeIdentifier() + "_active";
         }
 
+        // protected JObject GetSerializeObject(JObject jobj)
+        // {
+        //     return jobj.GetOrMakeValue(SerializeIdentifier(), new JObject());
+        // }
+
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
             if (isOptional)
                 jobj.Add(GetSerializeKey(), Active);
+            // jobj = GetSerializeObject(jobj);
+            // jobj.Add("optional", isOptional);
+            // jobj.Add("active", Active);
         }
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
@@ -60,6 +68,9 @@ namespace PluginManager.PluginTree.Components
                 isOptional = true;
                 Active = jobj.GetValue(GetSerializeKey(), false);
             }
+            // jobj = GetSerializeObject(jobj);
+            // isOptional = jobj.GetValue("optional", false);
+            // Active = jobj.GetValue("active", false);
         }
     }
 }

@@ -42,11 +42,15 @@ namespace PluginManager.PluginTree.Components
 
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
+            base.Serialize(jobj, TEL);
+            // jobj = GetSerializeObject(jobj);
             jobj.Add("name", NameString);
         }
 
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
+            base.Deserialize(jobj, TEL);
+            // jobj = GetSerializeObject(jobj);
             NameString = jobj.GetValue("name", "");
         }
 

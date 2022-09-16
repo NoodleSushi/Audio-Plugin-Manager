@@ -111,6 +111,18 @@ namespace PluginManager.PluginTree
             return null;
         }
 
+        public Component GetComponent(Type type)
+        {
+            if (_componentMap.TryGetValue(type, out Component comp))
+                return comp;
+            return null;
+        }
+
+        public bool HasComponent<T>() where T : Component
+        {
+            return _componentMap.ContainsKey(typeof(T));
+        }
+
         public void UpdateTreeItem()
         {
             EmitSignal(nameof(ContentChanged));

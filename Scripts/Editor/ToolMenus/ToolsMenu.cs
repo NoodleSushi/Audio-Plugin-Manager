@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using PluginManager.Editor.Containers;
 using PluginManager.PluginTree;
 using PluginManager.PluginTree.Components;
-using System;
 
 namespace PluginManager.Editor.ToolMenus
 {
@@ -18,6 +17,8 @@ namespace PluginManager.Editor.ToolMenus
             AddItem(nameof(OnRevSortFolderPressed));
             AddItem(nameof(OnRemoveDuplicates));
             AddItem(nameof(OnNestedRemoveDuplicates));
+            AddItem(nameof(OnDeactivateOptionalsPressed));
+            AddItem(nameof(OnModifyOptionalsActivePressed));
         }
 
         [PopupItemAttribute("Generate Plugins")]
@@ -64,7 +65,7 @@ namespace PluginManager.Editor.ToolMenus
             );
             EditorServer.Instance.RefreshFolderEditor();
         }
-        
+
         public void RemoveDuplicates(TreeFolder treeFolder, bool nested = false)
         {
             HashSet<string> uniqueNames = new();
@@ -112,6 +113,26 @@ namespace PluginManager.Editor.ToolMenus
             }
             RemoveDuplicates(treeFolder, true);
             EditorServer.Instance.RefreshFolderEditor();
+        }
+
+        [PopupItemAttribute("Selected Deactivate Optionals")]
+        public void OnDeactivateOptionalsPressed()
+        {
+            var comps = EditorServer.Instance.SelectedTreeEntities
+                .SelectMany(x => x.Components)
+                .OfType<BaseOptional>()
+                .Where(x => x.isOptional);
+            foreach (var comp in comps)
+                comp.Active = false;
+        }
+
+        [PopupItemAttribute("Modify Optionals Active")]
+        public void OnModifyOptionalsActivePressed()
+        {
+            OptionalsActiveDialog optionalsActiveDialog = new();
+            WindowContainer.Instance.AddChild(optionalsActiveDialog);
+            optionalsActiveDialog.MakeFreeable();
+            optionalsActiveDialog.Popup();
         }
     }
 }

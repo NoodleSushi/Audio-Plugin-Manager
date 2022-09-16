@@ -105,6 +105,7 @@ namespace PluginManager.PluginTree.Components
         public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Serialize(jobj, TEL);
+            // jobj = GetSerializeObject(jobj);
             if (_TagList.Count > 0)
             {
                 jobj.Add(
@@ -119,6 +120,7 @@ namespace PluginManager.PluginTree.Components
         public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
+            // jobj = GetSerializeObject(jobj);
             if (jobj.GetValue<JArray>("tags") is JArray tags)
             {
                 foreach (var tag in tags)
