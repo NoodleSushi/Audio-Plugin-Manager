@@ -70,6 +70,7 @@ namespace PluginManager.Editor.Containers
             Tree.Connect("item_selected", this, nameof(OnTreeItemSelected));
             Tree.Connect("item_collapsed", this, nameof(OnTreeItemCollapsed));
             Tree.Connect("gui_input", this, nameof(OnTreeGuiInput));
+            Tree.Connect("button_pressed", this, nameof(OnTreeButtonPressed));
             PropertiesContainer = GetNode<VBoxContainer>(PropertiesPath);
             EditorServer.Instance.SetPropertiesContainer(PropertiesContainer);
             GetNode<BaseButton>(FolderButtonPath).Connect("pressed", this, nameof(OnFolderButtonPressed));
@@ -310,6 +311,11 @@ namespace PluginManager.Editor.Containers
                 if (eventKey.Scancode == (int)KeyList.Delete)
                     OnDeleteButtonPressed();
             }
+        }
+
+        private void OnTreeButtonPressed(TreeItem item, int column, int id)
+        {
+            item.GetTreeEntity()?.ButtonPressed(column, id);
         }
 
         private void OnFolderButtonPressed()

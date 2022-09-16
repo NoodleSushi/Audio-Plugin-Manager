@@ -63,6 +63,11 @@ namespace PluginManager.PluginTree
             _isGeneratingProperties = false;
         }
 
+        public void ButtonPressed(int column, int id)
+        {
+            
+        }
+
         private void OnDefaultButtonPressed()
         {
             if (GetComponent<Identifier>() is not Identifier identifier)
