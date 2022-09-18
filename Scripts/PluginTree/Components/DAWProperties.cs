@@ -10,41 +10,45 @@ namespace PluginManager.PluginTree.Components
 {
     public class DAWProperties : BaseOptional
     {
-        public List<string> DAWQueries = new();
-        public int Flags = 0;
+        public List<string> Names = new();
+        public List<string> Queries = new();
+        public int VisibleFlags = 0;
         public bool IsQueryVisible = true;
 
         public DAWProperties()
         {
             for (var i = 0; i < PluginServer.Instance.DAWCount; i++)
             {
-                DAWQueries.Add("");
+                Names.Add("");
+                Queries.Add("");
             }
-            Flags = (0b1 << PluginServer.Instance.DAWCount) - 1;
+            VisibleFlags = (0b1 << PluginServer.Instance.DAWCount) - 1;
         }
 
-        public void ToggleFlag(bool press_state, int idx)
+        public void ToggleVisibleFlag(bool press_state, int idx)
         {
-            Flags = (Flags & ~(0b1 << idx)) | ((press_state ? 0b1 : 0b0) << idx);
-            Flags &= (0b1 << PluginServer.Instance.DAWCount) - 1;
+            VisibleFlags = (VisibleFlags & ~(0b1 << idx)) | ((press_state ? 0b1 : 0b0) << idx);
+            VisibleFlags &= (0b1 << PluginServer.Instance.DAWCount) - 1;
         }
 
-        public bool GetFlagState(int idx) => ((Flags >> idx) & 1) > 0;
+        public bool GetVisibleFlagState(int idx) => ((VisibleFlags >> idx) & 1) > 0;
+
+        public void ChangeName(string newName, int idx)
+        {
+            Names[idx] = newName;
+        }
 
         public void ChangeQuery(string newQuery, int idx)
         {
-            DAWQueries[idx] = newQuery;
+            Queries[idx] = newQuery;
         }
 
         public override string GetName() => "DAW Properties";
 
         public override string SerializeIdentifier() => "daw";
 
-        public override void GenerateProperties()
+        protected override void OptionalGenerateProperties()
         {
-            base.GenerateProperties();
-            if (!Active)
-                return;
             for (int idx = 0; idx < PluginServer.Instance.DAWCount; idx++)
             {
                 using (Label label = new())
@@ -55,12 +59,12 @@ namespace PluginManager.PluginTree.Components
 
                 using (CheckBox check = new())
                 {
-                    check.Text = "Exposed";
-                    check.Pressed = GetFlagState(idx);
+                    check.Text = "Visible";
+                    check.Pressed = GetVisibleFlagState(idx);
                     check.Connect(
                         "toggled",
                         this,
-                        nameof(ToggleFlag),
+                        nameof(ToggleVisibleFlag),
                         new GDArray(idx)
                     );
                     EditorServer.Instance.AddProperty(check);
@@ -68,57 +72,84 @@ namespace PluginManager.PluginTree.Components
 
                 if (IsQueryVisible)
                 {
-                    LineEdit line = new()
-                    {
-                        Text = DAWQueries[idx]
-                    };
-                    if (TreeEntity.GetComponent<Name>() is Name nameComponent)
-                    {
-                        line.PlaceholderText = nameComponent.NameString;
-                    }
-                    line.Connect(
+                    string placeholder = TreeEntity.GetComponent<Name>()?.NameString ?? "";
+                    LineEdit nameLine = new() { Text = Names[idx], PlaceholderText = placeholder };
+                    LineEdit queryLine = new() { Text = Queries[idx], PlaceholderText = placeholder };
+                    nameLine.Connect(
+                        "text_changed",
+                        this,
+                        nameof(ChangeName),
+                        new GDArray(idx)
+                    );
+                    queryLine.Connect(
                         "text_changed",
                         this,
                         nameof(ChangeQuery),
                         new GDArray(idx)
                     );
-                    EditorServer.Instance.AddProperty(line);
+                    EditorServer.Instance.AddProperty(new Label()
+                    {
+                        Text = "Name:"
+                    });
+                    EditorServer.Instance.AddProperty(nameLine);
+                    EditorServer.Instance.AddProperty(new Label()
+                    {
+                        Text = "Query:"
+                    });
+                    EditorServer.Instance.AddProperty(queryLine);
                 }
             }
         }
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Serialize(jobj, TEL);
-            // jobj = GetSerializeObject(jobj);
-            if (DAWQueries.Any(x => x.Length > 0))
-                jobj.Add("DAWqueries", new JArray(DAWQueries));
-            if (Flags > 0)
-                jobj.Add("DAWflags", Flags);
+            if (Names.Any(x => x.Length > 0))
+                jobj.Add("names", new JArray(Names));
+            if (Queries.Any(x => x.Length > 0))
+                jobj.Add("queries", new JArray(Queries));
+            if (VisibleFlags > 0)
+                jobj.Add("flags", VisibleFlags);
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Deserialize(jobj, TEL);
-            // jobj = GetSerializeObject(jobj);
-            if (jobj.GetValue<JArray>("DAWqueries") is JArray dawQueries)
+            if (jobj.GetValue<JArray>("queries") is JArray dawQueries)
             {
                 int dawCount = Math.Min(PluginServer.Instance.DAWCount, dawQueries.Count);
                 for (int i = 0; i < dawCount; i++)
                 {
                     if (dawQueries[i].ToObject<string>() is string dawQuery)
-                        DAWQueries[i] = dawQuery;
+                        Queries[i] = dawQuery;
                 }
             }
-            Flags = jobj.GetValue<int>("DAWflags", 0);
+            if (jobj.GetValue<JArray>("names") is JArray dawNames)
+            {
+                int dawCount = Math.Min(PluginServer.Instance.DAWCount, dawNames.Count);
+                for (int i = 0; i < dawCount; i++)
+                {
+                    if (dawNames[i].ToObject<string>() is string dawName)
+                        Names[i] = dawName;
+                }
+            }
+            VisibleFlags = jobj.GetValue<int>("flags", 0);
+        }
+
+        public override void Copy(BaseOptional comp)
+        {
+            if (comp is not DAWProperties ccomp)
+                return;
+            VisibleFlags = ccomp.VisibleFlags;
+            Names = new(ccomp.Names);
+            Queries = new(ccomp.Queries);
         }
 
         public override Component Clone(Component newComponent = null)
         {
             DAWProperties newComp = newComponent as DAWProperties ?? new DAWProperties();
             base.Clone(newComp);
-            newComp.Flags = this.Flags;
-            newComp.DAWQueries = new(this.DAWQueries);
+            newComp.VisibleFlags = this.VisibleFlags;
+            newComp.Names = new(this.Names);
+            newComp.Queries = new(this.Queries);
             return newComp;
         }
     }

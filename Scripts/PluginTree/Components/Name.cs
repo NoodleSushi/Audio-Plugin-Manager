@@ -20,11 +20,8 @@ namespace PluginManager.PluginTree.Components
             TreeEntity.Label = NameString;
         }
 
-        public override void GenerateProperties()
+        protected override void OptionalGenerateProperties()
         {
-            base.GenerateProperties();
-            if (!Active)
-                return;
             LineEdit lineEdit = new()
             {
                 Text = NameString
@@ -40,18 +37,25 @@ namespace PluginManager.PluginTree.Components
             EmitSignal(nameof(NameChanged), NameString);
         }
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Serialize(jobj, TEL);
             // jobj = GetSerializeObject(jobj);
             jobj.Add("name", NameString);
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
             base.Deserialize(jobj, TEL);
             // jobj = GetSerializeObject(jobj);
             NameString = jobj.GetValue("name", "");
+        }
+
+        public override void Copy(BaseOptional comp)
+        {
+            if (comp is not Name ccomp)
+                return;
+            NameString = ccomp.NameString;
         }
 
         public override Component Clone(Component newComponent = null)

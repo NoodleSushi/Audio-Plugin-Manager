@@ -78,11 +78,14 @@ namespace PluginManager.PluginTree.Components
 
         public void CopyFromRef()
         {
-            DAWProperties thsProperties = TreeEntity.GetComponent<DAWProperties>();
-            DAWProperties refProperties = _TreeEntityRef.GetComponent<DAWProperties>();
-            thsProperties.Flags = refProperties.Flags;
-            thsProperties.DAWQueries = new(refProperties.DAWQueries);
-            TreeEntity.GetComponent<Name>().NameString = _TreeEntityRef.GetComponent<Name>().NameString;
+            foreach (Component comp in _TreeEntityRef.Components)
+            {
+                if (comp is not BaseOptional baseOpt)
+                    continue;
+                BaseOptional compMain = TreeEntity.GetComponent(baseOpt.GetType()) as BaseOptional;
+                if (compMain is not null)
+                    compMain.Copy(baseOpt);
+            }
         }
 
         public void OnCopyFromRefButtonPressed()

@@ -11,7 +11,7 @@ namespace PluginManager.PluginTree.Components
 
         public virtual string SerializeIdentifier() => "";
 
-        public override void GenerateProperties()
+        sealed public override void GenerateProperties()
         {
             base.GenerateProperties();
             if (isOptional)
@@ -24,7 +24,11 @@ namespace PluginManager.PluginTree.Components
                 checkBox.Connect("toggled", this, nameof(OnCheckBoxToggled));
                 EditorServer.Instance.AddProperty(checkBox);
             }
+            if (Active)
+                OptionalGenerateProperties();
         }
+
+        protected abstract void OptionalGenerateProperties();
 
         private void OnCheckBoxToggled(bool pressed)
         {
@@ -32,6 +36,8 @@ namespace PluginManager.PluginTree.Components
             TreeEntity.DeferredGenerateProperties();
             TreeEntity.DeferredUpdateTreeItem();
         }
+
+        public abstract void Copy(BaseOptional comp);
 
         public override Component Clone(Component newComponent)
         {
@@ -42,35 +48,33 @@ namespace PluginManager.PluginTree.Components
             return newComp;
         }
 
-        private string GetSerializeKey()
+        private void GetSerializeJObject(ref JObject jobj)
         {
-            return SerializeIdentifier() + "_active";
+            jobj = jobj.GetValue(SerializeIdentifier(), new JObject());
         }
 
-        // protected JObject GetSerializeObject(JObject jobj)
-        // {
-        //     return jobj.GetOrMakeValue(SerializeIdentifier(), new JObject());
-        // }
+        protected abstract void OptionalSerialize(JObject jobj, TreeEntityLookup TEL);
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected abstract void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL);
+
+        sealed public override void Serialize(JObject jobj, TreeEntityLookup TEL)
         {
+            JObject optJobj = new();
             if (isOptional)
-                jobj.Add(GetSerializeKey(), Active);
-            // jobj = GetSerializeObject(jobj);
-            // jobj.Add("optional", isOptional);
-            // jobj.Add("active", Active);
+                optJobj.Add("active", Active);
+            OptionalSerialize(optJobj, TEL);
+            jobj.Add(SerializeIdentifier(), optJobj);
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        sealed public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            if (jobj.ContainsKey(GetSerializeKey()))
+            GetSerializeJObject(ref jobj);
+            if (jobj.ContainsKey("active"))
             {
                 isOptional = true;
-                Active = jobj.GetValue(GetSerializeKey(), false);
+                Active = jobj.GetValue("active", false);
             }
-            // jobj = GetSerializeObject(jobj);
-            // isOptional = jobj.GetValue("optional", false);
-            // Active = jobj.GetValue("active", false);
+            OptionalDeserialize(jobj, TEL);
         }
     }
 }

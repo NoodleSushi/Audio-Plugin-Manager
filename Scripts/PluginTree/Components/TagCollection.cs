@@ -66,11 +66,8 @@ namespace PluginManager.PluginTree.Components
 
         public override string SerializeIdentifier() => "tag";
 
-        public override void GenerateProperties()
+        protected override void OptionalGenerateProperties()
         {
-            base.GenerateProperties();
-            if (!Active)
-                return;
             Tree tree = new()
             {
                 HideRoot = true,
@@ -102,10 +99,8 @@ namespace PluginManager.PluginTree.Components
             DeferredUpdateTreeItems();
         }
 
-        public override void Serialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Serialize(jobj, TEL);
-            // jobj = GetSerializeObject(jobj);
             if (_TagList.Count > 0)
             {
                 jobj.Add(
@@ -117,10 +112,8 @@ namespace PluginManager.PluginTree.Components
             }
         }
 
-        public override void Deserialize(JObject jobj, TreeEntityLookup TEL)
+        protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Deserialize(jobj, TEL);
-            // jobj = GetSerializeObject(jobj);
             if (jobj.GetValue<JArray>("tags") is JArray tags)
             {
                 foreach (var tag in tags)
@@ -129,6 +122,13 @@ namespace PluginManager.PluginTree.Components
                         _TagList.Add(PluginServer.Instance.TagList[idx]);
                 }
             }
+        }
+
+        public override void Copy(BaseOptional comp)
+        {
+            if (comp is not TagCollection ccomp)
+                return;
+            _TagList = new(ccomp._TagList);
         }
 
         public override Component Clone(Component newComponent = null)
