@@ -59,7 +59,8 @@ namespace PluginManager.PluginTree.Components
 
         public override void ModifyTreeItem(TreeItem treeItem)
         {
-            TreeEntity.Dimmed = (_TagList.Count > 0) || _TagList.Any(x => x.Visible);
+            if (_TagList.Count > 0)
+                TreeEntity.Dimmed = _TagList.Any(x => !x.Visible);
         }
 
         public override string GetName() => "Tag Collection";
