@@ -172,6 +172,14 @@ namespace PluginManager.Editor.Containers
             return Tree.GetSelected()?.GetTreeEntity();
         }
 
+        private List<TreeEntity> GetSelectedEntities()
+        {
+            return Tree.SelectedMetadatas
+                .OfType<TreeItemContainer>()
+                .Select(x => x.Modifier)
+                .ToList();
+        }
+
         private List<TreeEntity> GetGroupedSelectedEntities()
         {
             return Tree.GroupedSelectedMetadatas
