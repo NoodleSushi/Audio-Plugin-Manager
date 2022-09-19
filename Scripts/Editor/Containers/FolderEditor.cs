@@ -323,7 +323,27 @@ namespace PluginManager.Editor.Containers
 
         private void OnTreeButtonPressed(TreeItem item, int column, int id)
         {
-            item.GetTreeEntity()?.ButtonPressed(column, id);
+            if (item.GetTreeEntity() is not TreeEntity pressedTreeEntity)
+                return;
+            pressedTreeEntity.ButtonPressed(column, id);
+            if (id == (int)TreeEntity.BUTTON_ID.VISIBLE)
+            {
+                var selected = GetSelectedEntities();
+                if (selected.Count > 1 && selected.Contains(pressedTreeEntity))
+                {
+                    selected.ForEach(x =>
+                        {
+                            x.Visible = pressedTreeEntity.Visible;
+                            x.DeferredUpdateTreeItem();
+                            (x as TreeFolder)?.DeferredUpdateTreeItemChildren();
+                        });
+                }
+                else
+                {
+                    pressedTreeEntity.DeferredUpdateTreeItem();
+                    (pressedTreeEntity as TreeFolder)?.DeferredUpdateTreeItemChildren();
+                }
+            }
         }
 
         private void OnFolderButtonPressed()
