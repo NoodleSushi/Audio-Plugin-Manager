@@ -11,7 +11,10 @@ namespace PluginManager.PluginTree
 {
     public class TreeEntity : Resource
     {
-        private const int BUTTON_VISIBLE_ID = 0;
+        public enum BUTTON_ID
+        {
+            VISIBLE,
+        };
 
         [Signal]
         public delegate void ContentChanged();
@@ -40,9 +43,9 @@ namespace PluginManager.PluginTree
             treeItem.SetIcon(0, Icon);
             treeItem.SetText(0, Label);
             Texture visibilityIcon = Visible ? Resources.ICON_VISIBLE_ON : Resources.ICON_VISIBLE_OFF;
-            if (Parent != null && treeItem.GetButtonById(0, BUTTON_VISIBLE_ID) == -1)
-                treeItem.AddButton(0, visibilityIcon, BUTTON_VISIBLE_ID);
-            treeItem.SetButton(0, treeItem.GetButtonById(0, BUTTON_VISIBLE_ID), visibilityIcon);
+            if (Parent != null && treeItem.GetButtonById(0, (int)BUTTON_ID.VISIBLE) == -1)
+                treeItem.AddButton(0, visibilityIcon, (int)BUTTON_ID.VISIBLE);
+            treeItem.SetButton(0, treeItem.GetButtonById(0, (int)BUTTON_ID.VISIBLE), visibilityIcon);
             Dimmed = Dimmed || !Visible || (Parent is not null && Parent.Dimmed);
             if (Dimmed)
                 treeItem.SetCustomBgColor(0, new Color(Colors.Black, 0.25f));
@@ -73,11 +76,8 @@ namespace PluginManager.PluginTree
 
         public void ButtonPressed(int column, int id)
         {
-            if (id == BUTTON_VISIBLE_ID)
+            if (id == (int)BUTTON_ID.VISIBLE)
                 Visible = !Visible;
-            DeferredUpdateTreeItem();
-            if (this is TreeFolder treeFolder)
-                treeFolder.DeferredUpdateTreeItemChildren();
         }
 
         private void OnDefaultButtonPressed()
