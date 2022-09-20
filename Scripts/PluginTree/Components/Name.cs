@@ -39,15 +39,11 @@ namespace PluginManager.PluginTree.Components
 
         protected override void OptionalSerialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Serialize(jobj, TEL);
-            // jobj = GetSerializeObject(jobj);
             jobj.Add("name", NameString);
         }
 
         protected override void OptionalDeserialize(JObject jobj, TreeEntityLookup TEL)
         {
-            base.Deserialize(jobj, TEL);
-            // jobj = GetSerializeObject(jobj);
             NameString = jobj.GetValue("name", "");
         }
 
