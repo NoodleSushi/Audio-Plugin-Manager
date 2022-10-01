@@ -413,6 +413,7 @@ export_presets.cfg
 data_*/
 
 ### VisualStudioCode ###
+.vscode/
 !.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
