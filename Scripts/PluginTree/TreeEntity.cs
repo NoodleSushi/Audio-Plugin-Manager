@@ -29,6 +29,7 @@ namespace PluginManager.PluginTree
 
         public virtual void ModifyTreeItem(TreeItem treeItem)
         {
+            Dimmed = false;
             foreach (Component component in _components.Where(x => x.ShallModifyTreeItem))
             {
                 component.ModifyTreeItem(treeItem);
