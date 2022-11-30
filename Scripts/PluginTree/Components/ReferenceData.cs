@@ -14,10 +14,7 @@ namespace PluginManager.PluginTree.Components
             set
             {
                 _TreeEntityRef = value;
-                if (_TreeEntityRef is not null)
-                {
-                    _TreeEntityRef.GetComponent<Name>().Connect(nameof(Name.NameChanged), this, nameof(OnRefNameChanged));
-                }
+                _TreeEntityRef?.GetComponent<Name>().Connect(nameof(Name.NameChanged), this, nameof(OnRefNameChanged));
             }
         }
 
@@ -83,8 +80,7 @@ namespace PluginManager.PluginTree.Components
                 if (comp is not BaseOptional baseOpt)
                     continue;
                 BaseOptional compMain = TreeEntity.GetComponent(baseOpt.GetType()) as BaseOptional;
-                if (compMain is not null)
-                    compMain.Copy(baseOpt);
+                compMain?.Copy(baseOpt);
             }
         }
 

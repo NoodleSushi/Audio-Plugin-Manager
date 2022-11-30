@@ -22,16 +22,13 @@ namespace PluginManager.Editor.ToolMenus
         {
             get
             {
-                if (_typeList is null)
-                {
-                    _typeList = typeof(BaseOptional).Assembly.GetTypes()
+                _typeList ??= typeof(BaseOptional).Assembly.GetTypes()
                         .Where(x => x.IsSubclassOf(typeof(BaseOptional)))
                         .ToList();
-                }
                 return _typeList;
             }
         }
-        private Dictionary<Type, ActiveOption> _typeActiveOptions = new();
+        private readonly Dictionary<Type, ActiveOption> _typeActiveOptions = new();
 
         public override void _Ready()
         {
