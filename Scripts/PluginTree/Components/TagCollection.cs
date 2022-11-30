@@ -125,7 +125,7 @@ namespace PluginManager.PluginTree.Components
                 foreach (var tag in tags)
                 {
                     if (tag.ToObject<int>() is int idx)
-                        _TagList.Add(PluginServer.Instance.TagList[idx]);
+                        AddTag(PluginServer.Instance.TagList[idx]);
                 }
             }
         }
